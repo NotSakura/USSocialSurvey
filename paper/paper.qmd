@@ -2,12 +2,23 @@
 title: "US General Society Survey Analysis"
 author: "Shreya Sakura Noskor"
 thanks: "Code and data are available at: [repository](https://github.com/NotSakura/USSocialSurvey.git)"
+classoption: abstract
+author: "Cristina Burca, Yan Mezhiborsky, Sakura Noskor"
+format: pdf
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
-format: pdf
-number-sections: true
+abstract: |
+ Some abstact
+include-in-header: 
+  text:
+    \renewcommand{\abstractname}{Abstract}
 bibliography: references.bib
+margins:
+  top: 0.25in
+  bottom: 0.25in
+  left: 0.5in
+  right: 0.5in
+toc: true
 ---
 
 ```{r}
@@ -16,7 +27,164 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
+```
+
+
+
+```{r}
+library(dataverse)
+library(tidyverse)
+
+ces2020 <-
+  get_dataframe_by_name(
+    filename = "CES20_Common_OUTPUT_vv.csv",
+    dataset = "10.7910/DVN/E9N6PH",
+    server = "dataverse.harvard.edu",
+    .f = read_csv
+  ) |>
+  select(votereg, CC20_410, employ, immstat, dualcit, gender, birthyr, race, inputstate, presvote16post, religpew, edloan)
+
+write_csv(ces2020, "ces2020.csv")
+
+
+
+```
+
+```{r}
+ces2020 <-
+  read_csv(
+    "ces2020.csv",
+    col_types =
+      cols(
+        "votereg" = col_integer(),
+        "CC20_410" = col_integer(),
+        "employ" = col_integer(),
+        "dualcit" = col_integer(), 
+        "gender" = col_integer(), 
+        "birthyr" = col_integer(), 
+        "race" = col_integer(), 
+        "inputstate" = col_integer(), 
+        "presvote16post" = col_integer(), 
+        "religpew" = col_integer(), 
+        "edloan" = col_integer()
+      )
+  )
+
+ces2020
+```
+
+
+
+```{r}
+
+
+
+ces2020 <-
+  ces2020 |>
+  filter(votereg == 1,
+         CC20_410 %in% c(1, 2)) |>
+  mutate(
+    voted_for = if_else(CC20_410 == 1, "Biden", "Trump"),
+    voted_for = as_factor(voted_for),
+    gender = if_else(gender == 1, "Male", "Female"),
+    employ = case_when(
+      employ == 1 ~ "Full-time",
+      employ == 2 ~ "Part-time",
+      employ == 3 ~ "laid off",
+      employ == 4 ~ "unemployed",
+      employ == 5 ~ "retired",
+      employ == 6 ~ "permannetly disabled", 
+      employ == 7 ~ "Homemaker", 
+      employ == 8 ~ "Student", 
+      employ == 9 ~ "Other"
+    ),
+    employ = factor(
+      employ,
+      levels = c(
+        "Full-time",
+        "Part-time",
+        "laid off",
+        "unemployed",
+        "retired",
+        "permannetly disabled", 
+        "Homemaker", 
+        "Student", "Other"
+      )
+    ), 
+    immstat = case_when(
+      immstat == 1 ~ "immigrant and citizen",
+      immstat == 2 ~ "immigrant not citizen",
+      immstat == 3 ~ "born in US, but parent(s) immigrant",
+      immstat == 4 ~ "parent and I born in US but grandparent(s) immigrant",
+      immstat == 5 ~ "all born in US",
+    ),
+    immstat = factor(immstat, levels = c( "immigrant and citizen","immigrant not citizen", "born in US, but parent(s) immigrant",     "parent and I born in US but grandparent(s) immigrant", "all born in US")
+    ),
+    dualcit = if_else(dualcit == 1, "Yes", "No"),
+    race = case_when(
+      race == 1 ~ "White",
+      race == 2 ~ "Black",
+      race == 3 ~ "Hispanic",
+      race == 4 ~ "Asian",
+      race == 5 ~ "Native American",
+      race == 6 ~ "Middle Eastern", 
+      race == 7 ~ "Two or more races", 
+      race == 8 ~ "Other"
+    ),
+    race = factor(race, levels = c(
+        "White","Black","Hispanic", "Asian", "Native American", "Middle Eastern",  "Two or more races", "Other")
+    ), 
+    presvote16post = case_when(
+      presvote16post == 1 ~ "Hillary Clinton",
+      presvote16post == 2 ~ "Donald Trump",
+      presvote16post == 3 ~ "Gary Johnson",
+      presvote16post == 4 ~ "Jill Stein",
+      presvote16post == 5 ~ "Evan McMullin",
+      presvote16post == 6 ~ "Other", 
+      presvote16post == 7 ~ "Did not vote"
+    ),
+    presvote16post = factor(presvote16post, levels = c(
+        "Hillary Clinton","Donald Trump","Gary Johnson", "Jill Stein", "Evan McMullin", "Other", "Did not vote")
+    ),
+    religpew = case_when(
+      religpew == 1 ~ "Protestant",
+      religpew == 2 ~ "Roman Catholic",
+      religpew == 3 ~ "Mormon",
+      religpew == 4 ~ "Eastern or Greek Orthodox",
+      religpew == 5 ~ "Jewish",
+      religpew == 6 ~ "Muslim", 
+      religpew == 7 ~ "Buddhist", 
+      religpew == 8 ~ "Hindu", 
+      religpew == 9 ~ "Atheist", 
+      religpew == 10 ~ "Agnostic",
+      religpew == 11 ~ "Nothing in Particular",
+      religpew == 12 ~ "Something else"
+    ),
+    religpew = factor(
+      religpew,
+      levels = c(
+        "Protestant",
+        "Roman Catholic",
+        "Mormon",
+        "Eastern or Greek Orthodox",
+        "Jewish",
+        "Muslim", 
+        "Buddhist", 
+        "Hindu", "Atheist", "Agnostic", "Nothing in Particular", "Something else"
+      )
+    ), 
+    edloan = case_when(
+      edloan == 1 ~ "Yes",
+      edloan == 2 ~ "No",
+      edloan == 3 ~ "Other",
+      edloan == 4 ~ "Don't know",
+      edloan == 5 ~ "None of these",
+    ),
+    edloan = factor(edloan, levels = c( "Yes","No", "Other", "Don't Know", "None of these")
+    ) #########ADD input state it if you want to (sakura)
+  ) |>
+  select(votereg, employ, immstat, dualcit, gender, birthyr, race, inputstate, presvote16post, religpew, edloan)
+
 ```
 
 
@@ -30,56 +198,12 @@ The remainder of this paper is structured as follows. @sec-data....
 
 # Data {#sec-data}
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
 
-```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
-
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
-#| message: false
-
-analysis_data <- read_csv(here::here("data/analysis_data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
-```
-
-Talk way more about it. 
 
 
 
 # Model
 
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
-
-## Model set-up
-
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
 
 \begin{align} 
 y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
@@ -89,8 +213,6 @@ y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
 \gamma &\sim \mbox{Normal}(0, 2.5) \\
 \sigma &\sim \mbox{Exponential}(1)
 \end{align}
-
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
 
 
 ### Model justification
@@ -102,35 +224,6 @@ We can use maths by including latex between dollar signs, for instance $\theta$.
 
 # Results
 
-Our results are summarized in @tbl-modelresults.
-
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
-```
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
-
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
-```
 
 
 
