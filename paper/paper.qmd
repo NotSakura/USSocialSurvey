@@ -1,6 +1,5 @@
 ---
 title: "US General Society Survey Analysis"
-author: "Shreya Sakura Noskor"
 thanks: "Code and data are available at: [repository](https://github.com/NotSakura/USSocialSurvey.git)"
 classoption: abstract
 author: "Cristina Burca, Yan Mezhiborsky, Sakura Noskor"
@@ -32,6 +31,10 @@ library(tidyverse)
 
 
 ```{r}
+#| include: false
+#| warning: false
+#| message: false
+
 library(dataverse)
 library(tidyverse)
 
@@ -51,6 +54,10 @@ write_csv(ces2020, "ces2020.csv")
 ```
 
 ```{r}
+#| include: false
+#| warning: false
+#| message: false
+
 ces2020 <-
   read_csv(
     "ces2020.csv",
@@ -70,14 +77,14 @@ ces2020 <-
       )
   )
 
-ces2020
 ```
 
 
 
 ```{r}
-
-
+#| include: false
+#| warning: false
+#| message: false
 
 ces2020 <-
   ces2020 |>
@@ -90,10 +97,10 @@ ces2020 <-
     employ = case_when(
       employ == 1 ~ "Full-time",
       employ == 2 ~ "Part-time",
-      employ == 3 ~ "laid off",
-      employ == 4 ~ "unemployed",
-      employ == 5 ~ "retired",
-      employ == 6 ~ "permannetly disabled", 
+      employ == 3 ~ "Laid off",
+      employ == 4 ~ "Unemployed",
+      employ == 5 ~ "Retired",
+      employ == 6 ~ "Permannetly disabled", 
       employ == 7 ~ "Homemaker", 
       employ == 8 ~ "Student", 
       employ == 9 ~ "Other"
@@ -198,21 +205,54 @@ The remainder of this paper is structured as follows. @sec-data....
 
 # Data {#sec-data}
 
+- included variables of gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 US vote
 
 
 
 
 # Model
 
+The variable 'presvote16post' captures the 2016 US Presidential votes of individuals in the United States. Due to the minimal votes for Gary Johnson, Jill Stein, Evan McMullin, and all other candidates any votes not attributed to 'Hillary Clinton' or 'Donald Trump' were categorized as 'Other'.
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
+We have modeled the following logisitc regression in @fig-votes:
+
+
+
+```{r, fig.height=4, fig.width=8}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-votes
+#| fig-cap: 'Logistic regression of 2016 US Presidential votes comparing parameters of gender and employment status'
+
+#logisitc regression for binary outcome: YES OR NO, THIS OR THAT
+
+#choose values "Hillary Clinton" and "Donald Trump", all other values as "Other"
+ces2020_votes <- ces2020 %>%
+  filter(presvote16post != 'Did not vote') %>%
+  mutate(presvote16post = case_when(
+    presvote16post == "Hillary Clinton" ~ "Hillary Clinton",
+    presvote16post == "Donald Trump" ~ "Donald Trump",
+    presvote16post == "Gary Johnson" ~ "Other",
+    presvote16post == "Jill Stein" ~ "Other",
+    presvote16post == "Evan McMullin" ~ "Other",
+    presvote16post == "Other" ~ "Other"
+  ))
+
+#plot 2016 votes against employment status and gender
+#SO MANY NA VALUES???
+ces2020_votes %>%
+  ggplot(aes(x= employ, fill=presvote16post)) +
+  stat_count(position = "dodge") +
+  facet_wrap(facets = vars(gender)) +
+  theme_minimal() +
+  coord_flip() +
+  labs(x ="Employment status",
+      y = "Count of votes",
+      fill = "Vote in 2016")
+  
+```
+
 
 
 ### Model justification
@@ -269,22 +309,11 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
 ```
 
 ## Diagnostics
 
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
 
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
 
 ```{r}
 #| echo: false
@@ -296,9 +325,7 @@ posterior_vs_prior(first_model) +
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(first_model, "trace")
 
-plot(first_model, "rhat")
 ```
 
 
