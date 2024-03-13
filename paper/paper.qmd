@@ -26,6 +26,7 @@ toc: true
 #| message: false
 
 library(tidyverse)
+library(patchwork)
 ```
 
 
@@ -57,6 +58,7 @@ write_csv(ces2020, "ces2020.csv")
 #| include: false
 #| warning: false
 #| message: false
+
 
 ces2020 <-
   read_csv(
@@ -142,8 +144,8 @@ ces2020 <-
         "White","Black","Hispanic", "Asian", "Native American", "Middle Eastern",  "Two or more races", "Other")
     ), 
     presvote16post = case_when(
-      presvote16post == 1 ~ "Hillary Clinton",
-      presvote16post == 2 ~ "Donald Trump",
+      presvote16post == 1 ~ "Donald Trump",
+      presvote16post == 2 ~ "Hillary Clinton",
       presvote16post == 3 ~ "Gary Johnson",
       presvote16post == 4 ~ "Jill Stein",
       presvote16post == 5 ~ "Evan McMullin",
@@ -197,9 +199,6 @@ ces2020 <-
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. We use @citeR and @rohan.
-
-The remainder of this paper is structured as follows. @sec-data....
 
 
 
@@ -253,7 +252,43 @@ ces2020_votes %>%
   
 ```
 
+```{r, fig.height=4, fig.width=8}
+#| echo: false
+#| warning: false
+#| message: false
 
+ces2020_votes <- ces2020_votes %>%
+  filter(!is.na(dualcit))
+
+ces2020_votes %>% 
+  ggplot(aes(x= immstat, fill=presvote16post)) +
+  stat_count(position = "dodge") +
+  facet_wrap(facets = vars(dualcit), scales = "free_x") +
+  theme_minimal() +
+  coord_flip() +
+  labs(x ="Employment status",
+      y = "Count of votes",
+      fill = "Vote in 2016")
+
+```
+
+```{r, fig.height=4, fig.width=8}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+ces2020_votes %>% 
+  ggplot(aes(x= race, fill=presvote16post)) +
+  stat_count(position = "dodge") +
+  facet_wrap(facets = vars(gender), scales = "free_x") +
+  theme_minimal() +
+  coord_flip() +
+  labs(x ="Employment status",
+      y = "Count of votes",
+      fill = "Vote in 2016")
+
+```
 
 ### Model justification
 
