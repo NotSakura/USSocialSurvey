@@ -197,7 +197,22 @@ ces2020 <-
 
 # Data {#sec-data}
 
+<<<<<<< HEAD
 -   included variables of gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 US vote
+=======
+- included variables of gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 US vote
+
+## Data Used
+This paper was modeled with the help of R [@citeR] along with other useful packages like tidyverse [@tidy] (which includes graphing functions like ggplot2), patchwork [@patch]. There are parts of the code which were guided by Rohan Alexander's Telling Stories with fire [@rohan] chapter 13 section 13.2.2.
+
+## Variables inspected
+Starting off we look at the column votereg and CS20_410. They represent the number of people that registered to vote and who they voted for, respectively. The columns where the votereg was 2, meant that the person was not registered to vote so we essentially cleaned up those values to only look at people who did vote. The next variable we isolated was 2016pres which tells us, who Americans voted for during the 2016 United States Presidential Election. This is an important variable as we will be able to see if the citizens of america were satisfied with the service that the previous government provided. Then we look at gender as well as employment. Both gender and employment shows us if there is a correlation between a certain parties views vs the demographic they are a part of and represent. Gender contains 2 values (male and female) while, employment has 9 values; full time worker, part time worker, laid off, unemployed, retired, permanently disabled individual, Homemaker, Student or Other. 
+
+
+## Data Explained
+There could have been many other similar datasets that could have been used for this project for example we could have chosen to look at the census and election data for Canada. However, our group decided that because part of the analysis was done in @rohan, there were still many other variables that we could explore as we dive furthur into the 2020 presidential election and try to intrepret if there are any correlations between the variables and the result. Our team found it interesting to see all the variables that were collected by the US government and the correlations we saw during the analysis process; where there most definitely was a positive correlation between each variable and the outcome of the votes. Although we are analyzing the 2020 election that has already taken place, the analysis we do in the later sections are believed to apply to the 2024 elections happening this year. This is enough reason for us and the reader to dive into the patterns that exist with this large dataset.
+
+>>>>>>> 685cb574459c2bbf58bd6251a0e28f056e8ca2b7
 
 # Model
 
