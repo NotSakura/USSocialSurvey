@@ -27,9 +27,8 @@ toc: true
 
 library(tidyverse)
 library(patchwork)
+library(gridExtra)
 ```
-
-
 
 ```{r}
 #| include: false
@@ -80,8 +79,6 @@ ces2020 <-
   )
 
 ```
-
-
 
 ```{r}
 #| include: false
@@ -196,26 +193,17 @@ ces2020 <-
 
 ```
 
-
 # Introduction
-
-
-
 
 # Data {#sec-data}
 
-- included variables of gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 US vote
-
-
-
+-   included variables of gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 US vote
 
 # Model
 
 The variable 'presvote16post' captures the 2016 US Presidential votes of individuals in the United States. Due to the minimal votes for Gary Johnson, Jill Stein, Evan McMullin, and all other candidates any votes not attributed to 'Hillary Clinton' or 'Donald Trump' were categorized as 'Other'.
 
 We have modeled the following logisitc regression in @fig-votes:
-
-
 
 ```{r, fig.height=4, fig.width=8}
 #| echo: false
@@ -249,7 +237,9 @@ ces2020_votes %>%
   labs(x ="Employment status",
       y = "Count of votes",
       fill = "Vote in 2016")
-  
+```
+
+```{r, fig.height=4, fig.width=8}
 ```
 
 ```{r, fig.height=4, fig.width=8}
@@ -290,24 +280,58 @@ ces2020_votes %>%
 
 ```
 
+```{r}
+# Calculate percentages
+percentage_data <- ces2020_votes %>%
+  group_by(birthyr) %>%
+  summarise(HillaryClinton = sum(presvote16post == "Hillary Clinton") / n() * 100,
+            DonaldTrump = sum(presvote16post == "Donald Trump") / n() * 100,
+            Other = sum(presvote16post == "Other") / n() * 100,
+            DidNotVote = sum(presvote16post == "Did not Vote") / n() * 100) %>%
+  ungroup()
+
+# Reshape data to long format
+percentage_data_long <- pivot_longer(percentage_data, cols = -birthyr, names_to = "Candidate", values_to = "Percentage")
+
+plot_hillary <- ggplot(percentage_data_long %>% filter(Candidate == "HillaryClinton"), aes(x = birthyr, y = Percentage)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Percentage for Hillary Clinton", y = "Percentage (%)") +
+  theme_minimal()
+plot_hillary
+
+plot_trump <- ggplot(percentage_data_long %>% filter(Candidate == "DonaldTrump"), aes(x = birthyr, y = Percentage)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Percentage for Donald Trump", y = "Percentage (%)") +
+  theme_minimal()
+plot_trump
+
+plot_other <- ggplot(percentage_data_long %>% filter(Candidate == "Other"), aes(x = birthyr, y = Percentage)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Percentage for Other", y = "Percentage (%)") +
+  theme_minimal()
+plot_other
+
+
+
+```
+
+
 ### Model justification
 
 We expect a positive relationship between the size of the wings and time spent aloft. In particular...
 
 We can use maths by including latex between dollar signs, for instance $\theta$.
 
-
 # Results
-
-
-
-
 
 # Discussion
 
 ## First discussion point {#sec-first-point}
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this.
 
 ## Second discussion point
 
@@ -321,8 +345,7 @@ Weaknesses and next steps should also be included.
 
 \appendix
 
-# Appendix {-}
-
+# Appendix {.unnumbered}
 
 # Additional data details
 
@@ -332,7 +355,7 @@ Weaknesses and next steps should also be included.
 
 In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows...
 
 ```{r}
 #| eval: true
@@ -348,8 +371,6 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 
 ## Diagnostics
 
-
-
 ```{r}
 #| echo: false
 #| eval: true
@@ -363,11 +384,6 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 
 ```
 
-
-
 \newpage
 
-
 # References
-
-
