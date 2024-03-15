@@ -28,6 +28,8 @@ toc: true
 library(tidyverse)
 library(patchwork)
 library(gridExtra)
+library(rstanarm)
+library(modelsummary)
 ```
 
 ```{r}
@@ -189,109 +191,43 @@ ces2020 <-
     edloan = factor(edloan, levels = c( "Yes","No", "Other", "Don't Know", "None of these")
     ) #########ADD input state it if you want to (sakura)
   ) |>
-  select(votereg, employ, immstat, dualcit, gender, birthyr, race, inputstate, presvote16post, religpew, edloan)
+  select(voted_for, votereg, employ, immstat, dualcit, gender, birthyr, race, inputstate, presvote16post, religpew, edloan)
 
 ```
 
+
 # Introduction
+This research examines the voting patterns in the 2016 and 2020 US Presidential elections. We will be looking at data collected by the Cooperative Election Study and accessed through the Harvard University Database **cite**. The anaylsis is based on a representative sample of 61,000 American adults, which provides detailed information about each individuals gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 and 2020 Presidential vote. The goal of this study is to use relevant variables from the electoral data to investigate patterns, trend and predictions regrading American electoral preferences from 2016 and 2020.
 
 # Data {#sec-data}
 
--   included variables of gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 US vote
 
 ## Data Used
 This paper was modeled with the help of R [@citeR] along with other useful packages like tidyverse [@tidy] (which includes graphing functions like ggplot2), patchwork [@patch]. There are parts of the code which were guided by Rohan Alexander's Telling Stories with fire [@rohan] chapter 13 section 13.2.2.
 
 ## Variables inspected
-Starting off we look at the column votereg and CS20_410. They represent the number of people that registered to vote and who they voted for, respectively. The columns where the votereg was 2, meant that the person was not registered to vote so we essentially cleaned up those values to only look at people who did vote. The next variable we isolated was 2016pres which tells us, who Americans voted for during the 2016 United States Presidential Election. This is an important variable as we will be able to see if the citizens of america were satisfied with the service that the previous government provided. Then we look at gender as well as employment. Both gender and employment shows us if there is a correlation between a certain parties views vs the demographic they are a part of and represent. Gender contains 2 values (male and female) while, employment has 9 values; full time worker, part time worker, laid off, unemployed, retired, permanently disabled individual, Homemaker, Student or Other. 
+Starting off, we examine the columns 'votereg' and 'voted_for'. They represent the number of persons that registered to vote and which candidate they voted for in 2020, respectively. We filtered out the rows with a 'votereg' value of 2, which indicated unregistered voters, to focus exclusively on individuals who were registered to vote. 
+We then focused on the 'presvote16post' variable, which reveals the candidates Americans voted for in the 2016 United States Presidential Election. This is an important variable as it enables us to assess whether American citizens were satisfied with the service that the previous government provided. Next we look at 'gender' as well as 'employment'. Both 'gender' and 'employment' shows us if there is a correlation between certain parties views versus the demographic they represent. 'Gender' contains 2 values (male and female) while, employment has 9 values; full time worker, part time worker, laid off, unemployed, retired, permanently disabled individual, Homemaker, Student or Other. We also explore the variable 'immstat' which represents the immigration status of the of individual represented by one of the following: immigrant and citizen, immigrant not citizen, born in US, but parent(s) immigrant, parent and I born in US but grandparent(s) immigrant, or all born in US. 
 
 
 ## The Destination to Reach with the Data
-There could have been many other similar datasets that could have been used for this project for example we could have chosen to look at the census and election data for Canada. However, our group decided that because part of the analysis was done in @rohan, there were still many other variables that we could explore as we dive furthur into the 2020 presidential election and try to intrepret if there are any correlations between the variables and the result. Our team found it interesting to see all the variables that were collected by the US government and the correlations we saw during the analysis process; where there most definitely was a positive correlation between each variable and the outcome of the votes. Although we are analyzing the 2020 election that has already taken place, the analysis we do in the later sections are believed to apply to the 2024 elections happening this year. This is enough reason for us and the reader to dive into the patterns that exist with this large dataset.
+There could have been many other similar data sets that could have been used for this project for example we could have chosen to look at the census and election data for Canada. However, our group decided that because part of the analysis was done in @rohan, there were still many other variables that we could explore as we dive further into the 2020 presidential election and try to interpret if there are any correlations between the variables and the result. Our team found it interesting to see all the variables that were collected by the US government and the correlations we saw during the analysis process; where there most definitely was a positive correlation between each variable and the outcome of the votes. Although we are analyzing the 2020 election that has already taken place, the analysis we do in the later sections are believed to apply to the 2024 elections happening this year. This is enough reason for us and the reader to dive into the patterns that exist with this large data set.
 
 
-# Model
+# Model 1
+Initially, we filter the data to remove to exclude individuals who did not vote for Hillary Clinton or Donald Trump, due to the minimal votes for Gary Johnson, Jill Stein, Evan McMullin, and all other candidates which are insignificant to this paper. We first analyze the birth year of voters.
 
-The variable 'presvote16post' captures the 2016 US Presidential votes of individuals in the United States. Due to the minimal votes for Gary Johnson, Jill Stein, Evan McMullin, and all other candidates any votes not attributed to 'Hillary Clinton' or 'Donald Trump' were categorized as 'Other'.
-
-We have modeled the following logisitc regression in @fig-votes:
-
-```{r, fig.height=4, fig.width=8}
-#| echo: false
-#| warning: false
-#| message: false
-#| label: fig-votes
-#| fig-cap: 'Logistic regression of 2016 US Presidential votes comparing parameters of gender and employment status'
-
-#logisitc regression for binary outcome: YES OR NO, THIS OR THAT
-
-#choose values "Hillary Clinton" and "Donald Trump", all other values as "Other"
-ces2020_votes <- ces2020 %>%
-  filter(presvote16post != 'Did not vote') %>%
-  mutate(presvote16post = case_when(
-    presvote16post == "Hillary Clinton" ~ "Hillary Clinton",
-    presvote16post == "Donald Trump" ~ "Donald Trump",
-    presvote16post == "Gary Johnson" ~ "Other",
-    presvote16post == "Jill Stein" ~ "Other",
-    presvote16post == "Evan McMullin" ~ "Other",
-    presvote16post == "Other" ~ "Other"
-  ))
-
-#plot 2016 votes against employment status and gender
-#SO MANY NA VALUES???
-ces2020_votes %>%
-  ggplot(aes(x= employ, fill=presvote16post)) +
-  stat_count(position = "dodge") +
-  facet_wrap(facets = vars(gender)) +
-  theme_minimal() +
-  coord_flip() +
-  labs(x ="Employment status",
-      y = "Count of votes",
-      fill = "Vote in 2016")
-```
-
-```{r, fig.height=4, fig.width=8}
-```
-
-```{r, fig.height=4, fig.width=8}
-#| echo: false
-#| warning: false
-#| message: false
-
-ces2020_votes <- ces2020_votes %>%
-  filter(!is.na(dualcit))
-
-ces2020_votes %>% 
-  ggplot(aes(x= immstat, fill=presvote16post)) +
-  stat_count(position = "dodge") +
-  facet_wrap(facets = vars(dualcit), scales = "free_x") +
-  theme_minimal() +
-  coord_flip() +
-  labs(x ="Employment status",
-      y = "Count of votes",
-      fill = "Vote in 2016")
-
-```
-
-```{r, fig.height=4, fig.width=8}
-#| echo: false
-#| warning: false
-#| message: false
-
-
-ces2020_votes %>% 
-  ggplot(aes(x= race, fill=presvote16post)) +
-  stat_count(position = "dodge") +
-  facet_wrap(facets = vars(gender), scales = "free_x") +
-  theme_minimal() +
-  coord_flip() +
-  labs(x ="Employment status",
-      y = "Count of votes",
-      fill = "Vote in 2016")
-
-```
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# only choose values "Hillary Clinton" and "Donald Trump"
+ces2020_votes <- ces2020 %>%
+  filter(presvote16post != 'Did not vote') %>%
+  filter(presvote16post %in% c("Hillary Clinton", "Donald Trump"))
+
 # Calculate percentages
 percentage_data <- ces2020_votes %>%
   group_by(birthyr) %>%
@@ -318,6 +254,7 @@ plot_trump <- ggplot(percentage_data_long %>% filter(Candidate == "DonaldTrump")
   theme_minimal()
 plot_trump
 
+##porbably dont need this - cris
 plot_other <- ggplot(percentage_data_long %>% filter(Candidate == "Other"), aes(x = birthyr, y = Percentage)) +
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
@@ -326,6 +263,105 @@ plot_other <- ggplot(percentage_data_long %>% filter(Candidate == "Other"), aes(
 plot_other
 
 
+```
+In this model, we conduct an examination of the relationship between voters' birth year and their gender for the 2016 and 2020 Presidential elections. This analysis is visualized by plotting a histogram that separate female voters on the left and male voters on the right, with voters' birth years measured along the x-axis, which ranges from 1925 to 2002. The y-axis quantifies the voter turnout for the year. For clarity ad symbolic representation, the colour blue was chosen to represent the Democratic candidates --Hillary Clinton for the 2016 election, and Joe Biden for the 2020 election, while red was chosen to the Represent the Republican candidate, Donald Trump, who sought the presidency in both terms. @fig-genderyr2016 present the distribution of votes in 2016, and @fig-genderyr2020 presents the data from the 2020 election. 
+
+We have modeled the following logistic regression in the graphs:
+
+$$
+\begin{aligned} 
+y_i|\pi_i  &\sim \mbox{Bern}(\pi_i) \\
+\mbox{logit}(\pi_i) &= \beta_0 + \beta_1 \times \mbox{gender}_i + \beta_2\times \mbox{immigration status}_i\\
+\beta_0 &\sim \mbox{Normal}(0, 2.5) \\
+\beta_1 &\sim \mbox{Normal}(0, 2.5) \\
+\beta_2 &\sim \mbox{Normal}(0, 2.5)
+\end{aligned}
+$$
+
+```{r, fig.height=6, fig.width=11}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-genderyr2016
+#| fig-cap: 'Logistic regression of 2016 US Presidential votes comparing parameters of gender and immigration status'
+
+my_palette <- c("Hillary Clinton" = "skyblue3", "Donald Trump" = "indianred3")
+my_palette2 <- c("Biden" = "skyblue3", "Trump" = "indianred3")
+
+ces2020_votes %>% 
+  ggplot(aes(x= birthyr, fill=presvote16post)) +
+  geom_histogram(binwidth = 2, position = "dodge", alpha = 0.8) + 
+  facet_wrap(facets = vars(gender), scales = "free_x") +
+  theme_minimal() +
+  scale_fill_manual(values = my_palette) + 
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x ="Birth Year",
+      y = "Count of votes",
+      fill = "Vote in 2016")
+```
+
+
+```{r, fig.height=6, fig.width=11}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-genderyr2020
+#| fig-cap: 'Logistic regression of 2020 US Presidential votes comparing parameters of gender and immigration status'
+
+ces2020_votes %>% 
+  ggplot(aes(x= birthyr, fill=voted_for)) +
+  geom_histogram(binwidth = 2, position = "dodge", alpha = 0.8) + 
+  facet_wrap(facets = vars(gender), scales = "free_x") +
+  theme_minimal() +
+  scale_fill_manual(values = my_palette2) + 
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x ="Birth Year",
+      y = "Count of votes",
+      fill = "Vote in 2020")
+
+```
+In this model, we conduct an examination of the relationship between voters' birth year and their gender for the 2016 and 2020 Presidential elections. This analysis is visualized by plotting a histogram that separate female voters on the left and male voters on the right, with voters' birth years measured along the x-axis, which ranges from 1925 to 2002. The y-axis quantifies the voter turnout for the year. For clarity ad symbolic representation, the colour blue was chosen to represent the Democratic candidates --Hillary Clinton for the 2016 election, and Joe Biden for the 2020 election, while red was chosen to the Represent the Republican candidate, Donald Trump, who sought the presidency in both terms. @fig-genderyr2016 present the distribution of votes in 2016, and @ifg-genderyr2020 presents the data from the 2020 election. 
+
+
+# Model 2
+
+```{r, fig.align='right', fig.height=5, fig.width=11}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+#plot for 2016 votes
+ces2020_votes %>% 
+  ggplot(aes(x= immstat, fill=presvote16post)) +
+  stat_count(position = "dodge") +
+  facet_wrap(facets = vars(gender), scales = "free_x") +
+  theme_minimal() +
+  coord_flip() +
+  scale_fill_manual(values = my_palette) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x ="Immigration status",
+      y = "Count of votes",
+      fill = "Vote in 2016")
+
+#plot for 2020 votes
+ces2020_votes %>% 
+  ggplot(aes(x= immstat, fill=voted_for)) +
+  stat_count(position = "dodge") +
+  facet_wrap(facets = vars(gender), scales = "free_x") +
+  theme_minimal() +
+  coord_flip() +
+  scale_fill_manual(values = my_palette2) + 
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(x ="Immigration status",
+      y = "Count of votes",
+      fill = "Vote in 2020")
+
+
+#trump republican hillary and bidne were democrat 
+#male born in the US are a 50/50, everyone else changed minds
+```
+```{r}
 
 ```
 
