@@ -30,6 +30,10 @@ library(patchwork)
 library(gridExtra)
 library(rstanarm)
 library(modelsummary)
+library(dplyr)
+library(lubridate)
+library(kableExtra)
+library(knitr)
 ```
 
 ```{r}
@@ -214,7 +218,9 @@ We then focused on the 'presvote16post' variable, which reveals the candidates A
 There could have been many other similar data sets that could have been used for this project for example we could have chosen to look at the census and election data for Canada. However, our group decided that because part of the analysis was done in @rohan, there were still many other variables that we could explore as we dive further into the 2020 presidential election and try to interpret if there are any correlations between the variables and the result. Our team found it interesting to see all the variables that were collected by the US government and the correlations we saw during the analysis process; where there most definitely was a positive correlation between each variable and the outcome of the votes. Although we are analyzing the 2020 election that has already taken place, the analysis we do in the later sections are believed to apply to the 2024 elections happening this year. This is enough reason for us and the reader to dive into the patterns that exist with this large data set.
 
 
-# Model 1
+# Models
+
+## Model 1
 Initially, we filter the data to remove to exclude individuals who did not vote for Hillary Clinton or Donald Trump, due to the minimal votes for Gary Johnson, Jill Stein, Evan McMullin, and all other candidates which are insignificant to this paper. We first analyze the birth year of voters.
 
 
@@ -264,26 +270,16 @@ plot_other
 
 
 ```
+## Model 2
 In this model, we conduct an examination of the relationship between voters' birth year and their gender for the 2016 and 2020 Presidential elections. This analysis is visualized by plotting a histogram that separate female voters on the left and male voters on the right, with voters' birth years measured along the x-axis, which ranges from 1925 to 2002. The y-axis quantifies the voter turnout for the year. For clarity ad symbolic representation, the colour blue was chosen to represent the Democratic candidates --Hillary Clinton for the 2016 election, and Joe Biden for the 2020 election, while red was chosen to the Represent the Republican candidate, Donald Trump, who sought the presidency in both terms. @fig-genderyr2016 present the distribution of votes in 2016, and @fig-genderyr2020 presents the data from the 2020 election. 
 
-We have modeled the following logistic regression in the graphs:
-
-$$
-\begin{aligned} 
-y_i|\pi_i  &\sim \mbox{Bern}(\pi_i) \\
-\mbox{logit}(\pi_i) &= \beta_0 + \beta_1 \times \mbox{gender}_i + \beta_2\times \mbox{immigration status}_i\\
-\beta_0 &\sim \mbox{Normal}(0, 2.5) \\
-\beta_1 &\sim \mbox{Normal}(0, 2.5) \\
-\beta_2 &\sim \mbox{Normal}(0, 2.5)
-\end{aligned}
-$$
 
 ```{r, fig.height=6, fig.width=11}
 #| echo: false
 #| warning: false
 #| message: false
 #| label: fig-genderyr2016
-#| fig-cap: 'Logistic regression of 2016 US Presidential votes comparing parameters of gender and immigration status'
+#| fig-cap: "Logistic regression of 2016 US Presidential votes comparing parameters of gender and immigration status"
 
 my_palette <- c("Hillary Clinton" = "skyblue3", "Donald Trump" = "indianred3")
 my_palette2 <- c("Biden" = "skyblue3", "Trump" = "indianred3")
@@ -295,10 +291,12 @@ ces2020_votes %>%
   theme_minimal() +
   scale_fill_manual(values = my_palette) + 
   guides(fill = guide_legend(reverse = TRUE)) +
-  labs(x ="Birth Year",
+  labs(x ="Birth year",
       y = "Count of votes",
       fill = "Vote in 2016")
 ```
+We notice in @fig-genderyr2016 the graph displays two distinct high points for the number of female Republican voters, with the peak around 1960 being the most pronounced, followed by another around 1980. There are similar peaks in the graph for female Democratic voters, but with the overall count being considerably lower. We also notice that the Democratic party received slightly more votes from the older demographic, where as the younger demographic greatly preferred the Republican party. In comparison, the graph displaying the male votes has a more balanced distribution, and similar to the female voters, the older and younger demographic preferred the Democratic Party and the Republican Party, respectively. It is worthy to mention that there is a higher count of women than men.
+
 
 
 ```{r, fig.height=6, fig.width=11}
@@ -308,6 +306,7 @@ ces2020_votes %>%
 #| label: fig-genderyr2020
 #| fig-cap: 'Logistic regression of 2020 US Presidential votes comparing parameters of gender and immigration status'
 
+#plot for 2020 votes by 
 ces2020_votes %>% 
   ggplot(aes(x= birthyr, fill=voted_for)) +
   geom_histogram(binwidth = 2, position = "dodge", alpha = 0.8) + 
@@ -320,10 +319,115 @@ ces2020_votes %>%
       fill = "Vote in 2020")
 
 ```
-In this model, we conduct an examination of the relationship between voters' birth year and their gender for the 2016 and 2020 Presidential elections. This analysis is visualized by plotting a histogram that separate female voters on the left and male voters on the right, with voters' birth years measured along the x-axis, which ranges from 1925 to 2002. The y-axis quantifies the voter turnout for the year. For clarity ad symbolic representation, the colour blue was chosen to represent the Democratic candidates --Hillary Clinton for the 2016 election, and Joe Biden for the 2020 election, while red was chosen to the Represent the Republican candidate, Donald Trump, who sought the presidency in both terms. @fig-genderyr2016 present the distribution of votes in 2016, and @ifg-genderyr2020 presents the data from the 2020 election. 
+We notice in @fig-genderyr2020 that the graphs bear a strong resemblance to the distributions of the 2016 votes depicted in @fig-genderyr2016, but with the parties reversed on the graph. We are interested in the ratios of these graphs.
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: tbl-ratio2016
 
-# Model 2
+ces2020_votes_2016 <- ces2020_votes %>%
+  mutate(birth_decade = (birthyr %/% 10) * 10,
+    trump_vote = ifelse(presvote16post == "Donald Trump", 1, 0),
+    biden_vote = ifelse(presvote16post == "Hillary Clinton", 1, 0))
+
+ces2020_votes_2016 <- ces2020_votes_2016 %>%
+  filter(!(birth_decade %in% c(1920, 2000)))
+
+votes_count <- ces2020_votes_2016 %>%
+  group_by(birth_decade, gender) %>%
+  summarise(biden_vote_total = sum(biden_vote), trump_vote_total = sum(trump_vote), .groups = "drop")
+
+votes_count <- votes_count %>%
+  mutate(vote_ratio = biden_vote_total / trump_vote_total)
+
+votes_count_female <- votes_count %>% 
+  filter(gender == "Female")
+votes_count_male <- votes_count %>% 
+  filter(gender == "Male")
+
+votes_count_female <- select(votes_count_female, -gender)
+votes_count_male <- select(votes_count_male, -gender)
+
+colnames(votes_count_female) <- c("Birth Decade", "Total Clinton Votes", "Total Trump Votes", "Ratio")
+colnames(votes_count_male) <- c("Birth Decade", "Total Clinton Votes", "Total Trump Votes", "Ratio")
+
+votes_2020_f <- kable(votes_count_female, 
+      caption = "Ratio of 2016 Votes for Clinton to Trump by Birth Decade (Females)",
+      digits = 2)
+
+votes_2020_m <- kable(votes_count_male, 
+      caption = "Ratio of 2016 Votes for Clinton to Trump by Birth Decade (Males)",
+      digits = 2)
+
+kables(list(votes_2020_f, votes_2020_m))
+#If the ratio is greater than 1, it means that within the group, Biden has more votes than Trump
+#if the ratio is less than 1, Trump has more votes within the group
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: tbl-ratio2020
+
+ces2020_votes_2020 <- ces2020_votes %>%
+  mutate(birth_decade = (birthyr %/% 10) * 10,
+    trump_vote = ifelse(voted_for == "Trump", 1, 0),
+    biden_vote = ifelse(voted_for == "Biden", 1, 0))
+
+ces2020_votes_2020 <- ces2020_votes_2020 %>%
+  filter(!(birth_decade %in% c(1920, 2000)))
+
+votes_count <- ces2020_votes_2020 %>%
+  group_by(birth_decade, gender) %>%
+  summarise(biden_vote_total = sum(biden_vote), trump_vote_total = sum(trump_vote), .groups = "drop")
+
+votes_count <- votes_count %>%
+  mutate(vote_ratio = biden_vote_total / trump_vote_total)
+
+votes_count_female <- votes_count %>% 
+  filter(gender == "Female")
+votes_count_male <- votes_count %>% 
+  filter(gender == "Male")
+
+votes_count_female <- select(votes_count_female, -gender)
+votes_count_male <- select(votes_count_male, -gender)
+
+colnames(votes_count_female) <- c("Birth Decade", "Total Biden Votes", "Total Trump Votes", "Ratio")
+colnames(votes_count_male) <- c("Birth Decade", "Total Biden Votes", "Total Trump Votes", "Ratio")
+
+votes_2020_f <- kable(votes_count_female, 
+      caption = "Ratio of 2020 Votes for Biden to Trump by Birth Decade (Females)",
+      digits = 2)
+
+votes_2020_m <- kable(votes_count_male, 
+      caption = "Ratio of 2020 Votes for Biden to Trump by Birth Decade (Males)",
+      digits = 2)
+
+kables(list(votes_2020_f, votes_2020_m))
+#If the ratio is greater than 1, it means that within the group, Biden has more votes than Trump
+#if the ratio is less than 1, Trump has more votes within the group
+```
+
+We analyze the ratio of Democratic to Republic votes in 2016 in @tbl-ratio2016 and in 2020 in @tbl-ratio2020. We divide respondents by birth decade, and we list the total number of votes for the Democratic Party and thee Republican Party, then list the ratio of the two. The decades 1920 and 2000 were omitted since the number of respondents in those Birth Decades were very low. The value of the ratio in centered at 1, where if the values is greater than 1, then within that group, the Democratic Party has more votes than the Republican Party. Where the values are less than 1, the Republican Party has more votes. When the ratio is around 1, the number of votes is approximately equal. 
+
+We notice that in 2016, the ratio of votes decreases as birth decade increases for both women and men voters. The opposite happens in 2020, where the ratio of votes increases as birth decade increases. 
+
+## Model 3
+
+We have modeled the following logistic regression in the graphs:
+
+$$
+\begin{aligned} 
+y_i|\pi_i  &\sim \mbox{Bern}(\pi_i) \\
+\mbox{logit}(\pi_i) &= \beta_0 + \beta_1 \times \mbox{gender}_i + \beta_2\times \mbox{immigration status}_i\\
+\beta_0 &\sim \mbox{Normal}(0, 2.5) \\
+\beta_1 &\sim \mbox{Normal}(0, 2.5) \\
+\beta_2 &\sim \mbox{Normal}(0, 2.5)
+\end{aligned}
+$$
 
 ```{r, fig.align='right', fig.height=5, fig.width=11}
 #| echo: false
@@ -361,16 +465,45 @@ ces2020_votes %>%
 #trump republican hillary and bidne were democrat 
 #male born in the US are a 50/50, everyone else changed minds
 ```
+
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+set.seed(302)
+
+ces2020_reduced <- 
+  ces2020_votes |> 
+  slice_sample(n = 1000)
+
+political_preferences <-
+  stan_glm(
+    voted_for ~ gender + immstat,
+    data = ces2020_reduced,
+    family = binomial(link = "logit"),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = 
+      normal(location = 0, scale = 2.5, autoscale = TRUE),
+    seed = 302
+  )
+
+saveRDS(
+  political_preferences,
+  file = "political_preferences.rds"
+)
+
+political_preferences <-
+  readRDS(file = "political_preferences.rds")
+
+modelsummary(
+  list(
+    "Support Biden" = political_preferences
+  ),
+  statistic = "mad"
+  )
 
 ```
-
-
-### Model justification
-
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
 
 # Results
 
