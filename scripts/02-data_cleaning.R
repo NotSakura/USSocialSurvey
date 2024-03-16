@@ -1,44 +1,58 @@
 #### Preamble ####
-# Purpose: Cleans the raw plane data recorded by two observers..... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 6 April 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
-# License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
-
+# Purpose: clean the data
+# Author: Sakura Noskor, Yan Mezhiborsky, Cristina Burca
+# Date: 13 March 2023
+# Contact: cristina.burca@mail.utoronto.ca, sakura.noskor@mail.utoronto.ca,  yan.mezhiborsky@mail.utoronto.ca
 #### Workspace setup ####
 library(tidyverse)
 
 #### Clean data ####
-raw_data <- read_csv("inputs/data/plane_data.csv")
+ces2020 <-
+  read_csv(
+    "data/raw_data/ces2020.csv",
+    col_types =
+      cols(
+        "votereg" = col_integer(),
+        "CC20_410" = col_integer(),
+        "immstat" = col_integer(), 
+        "gender" = col_integer(), 
+        "birthyr" = col_integer(),  
+        "presvote16post" = col_integer(), 
+      )
+  )
 
-cleaned_data <-
-  raw_data |>
-  janitor::clean_names() |>
-  select(wing_width_mm, wing_length_mm, flying_time_sec_first_timer) |>
-  filter(wing_width_mm != "caw") |>
-  mutate(
-    flying_time_sec_first_timer = if_else(flying_time_sec_first_timer == "1,35",
-                                   "1.35",
-                                   flying_time_sec_first_timer)
-  ) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "490",
-                                 "49",
-                                 wing_width_mm)) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "6",
-                                 "60",
-                                 wing_width_mm)) |>
-  mutate(
-    wing_width_mm = as.numeric(wing_width_mm),
-    wing_length_mm = as.numeric(wing_length_mm),
-    flying_time_sec_first_timer = as.numeric(flying_time_sec_first_timer)
-  ) |>
-  rename(flying_time = flying_time_sec_first_timer,
-         width = wing_width_mm,
-         length = wing_length_mm
-         ) |> 
-  tidyr::drop_na()
 
-#### Save data ####
-write_csv(cleaned_data, "outputs/data/analysis_data.csv")
+
+ces2020 <-
+  ces2020 |>
+  filter(votereg == 1,
+         CC20_410 %in% c(1, 2)) |>
+  mutate(
+    voted_for = if_else(CC20_410 == 1, "Biden", "Trump"),
+    voted_for = as_factor(voted_for),
+    gender = if_else(gender == 1, "Male", "Female"),
+    immstat = case_when(
+      immstat == 1 ~ "immigrant and citizen",
+      immstat == 2 ~ "immigrant not citizen",
+      immstat == 3 ~ "born in US, but parent(s) immigrant",
+      immstat == 4 ~ "parent and I born in US but grandparent(s) immigrant",
+      immstat == 5 ~ "all born in US",
+    ),
+    immstat = factor(immstat, levels = c( "immigrant and citizen","immigrant not citizen", "born in US, but parent(s) immigrant",     "parent and I born in US but grandparent(s) immigrant", "all born in US")
+    ),
+    presvote16post = case_when(
+      presvote16post == 1 ~ "Donald Trump",
+      presvote16post == 2 ~ "Hillary Clinton",
+      presvote16post == 3 ~ "Gary Johnson",
+      presvote16post == 4 ~ "Jill Stein",
+      presvote16post == 5 ~ "Evan McMullin",
+      presvote16post == 6 ~ "Other", 
+      presvote16post == 7 ~ "Did not vote"
+    ),
+    presvote16post = factor(presvote16post, levels = c(
+      "Hillary Clinton","Donald Trump","Gary Johnson", "Jill Stein", "Evan McMullin", "Other", "Did not vote")
+    )
+  ) |>
+  select(voted_for, votereg, immstat, gender, birthyr, presvote16post)
+
+write_csv(ces2020, "data/analysis_data/ces2020_cleaned.csv")

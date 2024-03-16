@@ -396,6 +396,7 @@ ces2020_votes %>%
 #| echo: false
 #| warning: false
 #| message: false
+#| include: false
 
 set.seed(302)
 
@@ -416,11 +417,11 @@ political_preferences <-
 
 saveRDS(
   political_preferences,
-  file = "political_preferences.rds"
+  file = "../models/political_preferences.rds"
 )
 
 political_preferences <-
-  readRDS(file = "political_preferences.rds")
+  readRDS(file = "../models/political_preferences.rds")
 
 ```
 

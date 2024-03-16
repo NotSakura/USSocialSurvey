@@ -1,11 +1,8 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
-# License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Purpose: model the data
+# Author: Sakura Noskor, Yan Mezhiborsky, Cristina Burca
+# Date: 13 March 2023
+# Contact: cristina.burca@mail.utoronto.ca, sakura.noskor@mail.utoronto.ca,  yan.mezhiborsky@mail.utoronto.ca
 
 
 #### Workspace setup ####
@@ -13,25 +10,27 @@ library(tidyverse)
 library(rstanarm)
 
 #### Read data ####
-analysis_data <- read_csv("data/analysis_data/analysis_data.csv")
+analysis_data <- read_csv("data/analysis_data/ces2020.csv")
 
 ### Model data ####
-first_model <-
+set.seed(302)
+
+ces2020_reduced <- 
+  ces2020_votes |> 
+  slice_sample(n = 1000)
+
+political_preferences <-
   stan_glm(
-    formula = flying_time ~ length + width,
-    data = analysis_data,
-    family = gaussian(),
+    voted_for ~ gender + immstat,
+    data = ces2020_reduced,
+    family = binomial(link = "logit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
+    prior_intercept = 
+      normal(location = 0, scale = 2.5, autoscale = TRUE),
+    seed = 302
   )
 
-
-#### Save model ####
 saveRDS(
-  first_model,
-  file = "models/first_model.rds"
+  political_preferences,
+  file = "models/political_preferences.rds"
 )
-
-
