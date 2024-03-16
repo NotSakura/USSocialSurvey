@@ -7,7 +7,7 @@ format: pdf
 date: today
 date-format: long
 abstract: |
- Some abstact
+ This data uses the US 2020 Census results that is in the Harvard Database in order to analyse if there is a correltaion between the election numbers in 2020 and other factors. The factors include immigration status, gender, birth year, and results from the 2016 election. It was found that there does exist a correlation between the outcomes of the 2020 election and the above variables. These are important results as the US is a country that si considered a hub, due to all the external relations they have with multiple countries. These results will also help predict who may win the 2024 elections. 
 include-in-header: 
   text:
     \renewcommand{\abstractname}{Abstract}
@@ -51,7 +51,7 @@ ces2020 <-
     server = "dataverse.harvard.edu",
     .f = read_csv
   ) |>
-  select(votereg, CC20_410, employ, immstat, dualcit, gender, birthyr, race, inputstate, presvote16post, religpew, edloan)
+  select(votereg, CC20_410, immstat, gender, birthyr, presvote16post)
 
 write_csv(ces2020, "ces2020.csv")
 
@@ -72,15 +72,10 @@ ces2020 <-
       cols(
         "votereg" = col_integer(),
         "CC20_410" = col_integer(),
-        "employ" = col_integer(),
-        "dualcit" = col_integer(), 
+        "immstat" = col_integer(), 
         "gender" = col_integer(), 
-        "birthyr" = col_integer(), 
-        "race" = col_integer(), 
-        "inputstate" = col_integer(), 
+        "birthyr" = col_integer(),  
         "presvote16post" = col_integer(), 
-        "religpew" = col_integer(), 
-        "edloan" = col_integer()
       )
   )
 
@@ -99,30 +94,6 @@ ces2020 <-
     voted_for = if_else(CC20_410 == 1, "Biden", "Trump"),
     voted_for = as_factor(voted_for),
     gender = if_else(gender == 1, "Male", "Female"),
-    employ = case_when(
-      employ == 1 ~ "Full-time",
-      employ == 2 ~ "Part-time",
-      employ == 3 ~ "Laid off",
-      employ == 4 ~ "Unemployed",
-      employ == 5 ~ "Retired",
-      employ == 6 ~ "Permannetly disabled", 
-      employ == 7 ~ "Homemaker", 
-      employ == 8 ~ "Student", 
-      employ == 9 ~ "Other"
-    ),
-    employ = factor(
-      employ,
-      levels = c(
-        "Full-time",
-        "Part-time",
-        "laid off",
-        "unemployed",
-        "retired",
-        "permannetly disabled", 
-        "Homemaker", 
-        "Student", "Other"
-      )
-    ), 
     immstat = case_when(
       immstat == 1 ~ "immigrant and citizen",
       immstat == 2 ~ "immigrant not citizen",
@@ -132,20 +103,6 @@ ces2020 <-
     ),
     immstat = factor(immstat, levels = c( "immigrant and citizen","immigrant not citizen", "born in US, but parent(s) immigrant",     "parent and I born in US but grandparent(s) immigrant", "all born in US")
     ),
-    dualcit = if_else(dualcit == 1, "Yes", "No"),
-    race = case_when(
-      race == 1 ~ "White",
-      race == 2 ~ "Black",
-      race == 3 ~ "Hispanic",
-      race == 4 ~ "Asian",
-      race == 5 ~ "Native American",
-      race == 6 ~ "Middle Eastern", 
-      race == 7 ~ "Two or more races", 
-      race == 8 ~ "Other"
-    ),
-    race = factor(race, levels = c(
-        "White","Black","Hispanic", "Asian", "Native American", "Middle Eastern",  "Two or more races", "Other")
-    ), 
     presvote16post = case_when(
       presvote16post == 1 ~ "Donald Trump",
       presvote16post == 2 ~ "Hillary Clinton",
@@ -157,57 +114,26 @@ ces2020 <-
     ),
     presvote16post = factor(presvote16post, levels = c(
         "Hillary Clinton","Donald Trump","Gary Johnson", "Jill Stein", "Evan McMullin", "Other", "Did not vote")
-    ),
-    religpew = case_when(
-      religpew == 1 ~ "Protestant",
-      religpew == 2 ~ "Roman Catholic",
-      religpew == 3 ~ "Mormon",
-      religpew == 4 ~ "Eastern or Greek Orthodox",
-      religpew == 5 ~ "Jewish",
-      religpew == 6 ~ "Muslim", 
-      religpew == 7 ~ "Buddhist", 
-      religpew == 8 ~ "Hindu", 
-      religpew == 9 ~ "Atheist", 
-      religpew == 10 ~ "Agnostic",
-      religpew == 11 ~ "Nothing in Particular",
-      religpew == 12 ~ "Something else"
-    ),
-    religpew = factor(
-      religpew,
-      levels = c(
-        "Protestant",
-        "Roman Catholic",
-        "Mormon",
-        "Eastern or Greek Orthodox",
-        "Jewish",
-        "Muslim", 
-        "Buddhist", 
-        "Hindu", "Atheist", "Agnostic", "Nothing in Particular", "Something else"
-      )
-    ), 
-    edloan = case_when(
-      edloan == 1 ~ "Yes",
-      edloan == 2 ~ "No",
-      edloan == 3 ~ "Other",
-      edloan == 4 ~ "Don't know",
-      edloan == 5 ~ "None of these",
-    ),
-    edloan = factor(edloan, levels = c( "Yes","No", "Other", "Don't Know", "None of these")
-    ) #########ADD input state it if you want to (sakura)
+    )
   ) |>
-  select(voted_for, votereg, employ, immstat, dualcit, gender, birthyr, race, inputstate, presvote16post, religpew, edloan)
+  select(voted_for, votereg, immstat, gender, birthyr, presvote16post)
 
 ```
 
 
 # Introduction
-This research examines the voting patterns in the 2016 and 2020 US Presidential elections. We will be looking at data collected by the Cooperative Election Study and accessed through the Harvard University Database **cite**. The anaylsis is based on a representative sample of 61,000 American adults, which provides detailed information about each individuals gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 and 2020 Presidential vote. The goal of this study is to use relevant variables from the electoral data to investigate patterns, trend and predictions regrading American electoral preferences from 2016 and 2020.
+
+The United States is one of the leading countries in export, imports and almost everything economic and socially related. The US contributes to the worlds economy by 20% despite the fact that they contain 5% of the populations[@USTradeRep]. This makes the US very relevant to not only national news but also international news. This is why the US presidential elections are broadcaster to worldwide ever election term. The results of the election not only affect American citizens but also external affairs related to the country. 
+
+The United States of America is a democratic government which means that they hold election every 4 years[@usc_presidential_election]. The 2 parties that historically run against each other with the most votes are the Republican party and the Democratic Party. The republicans are often associated with conservative beliefs and values such as views opposing abortion and privatization to save their economy. The Democrats, on the other hand, are often associated with liberal views such as social welfare programs and higher taxes to support the government aids provided to citizens[@britannica_dem_vs_rep]. There are many other parties such as Libertarian Party, Green Party, Constitution Party and other independent candidates but because majority of the votes goes to the 2 parties the others are often over looked. The legal voting age is 18 in the states and you must be a registered voter in order to take part of the election which means non-citizens are not taken into account. Students are not as well. Also there seems to be a 66% voter turnout which means the remaining 34% decided not to vote [@DeSilver_2022]. The 2024 elections is also coming up this year meaning that analyzing this results may help us predict what the outcome of the election might be. 
+
+This research examines the voting patterns in the 2016 and 2020 US Presidential elections. We will be looking at data collected by the Cooperative Election Study and accessed through the Harvard University Database [@dataverse]. The analysis is based on a representative sample of 61,000 American adults, which provides detailed information about each individuals gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 and 2020 Presidential vote. The goal of this study is to use relevant variables from the electoral data to investigate patterns, trend and predictions regrading American electoral preferences from 2016 and 2020.
 
 # Data {#sec-data}
 
 
 ## Data Used
-This paper was modeled with the help of R [@citeR] along with other useful packages like tidyverse [@tidy] (which includes graphing functions like ggplot2), patchwork [@patch]. There are parts of the code which were guided by Rohan Alexander's Telling Stories with fire [@rohan] chapter 13 section 13.2.2.
+This paper was modeled with the help of R [@citeR] along with other useful packages like tidyverse [@tidy] (which includes graphing functions like ggplot2), patchwork [@patch]. There are parts of the code which were guided by Rohan Alexander's Telling Stories with fire [@rohan] chapter 13 section 13.2.2. The data was used from the Harvard database [@dataverse]
 
 ## Variables inspected
 Starting off, we examine the columns 'votereg' and 'voted_for'. They represent the number of persons that registered to vote and which candidate they voted for in 2020, respectively. We filtered out the rows with a 'votereg' value of 2, which indicated unregistered voters, to focus exclusively on individuals who were registered to vote. 
@@ -496,14 +422,19 @@ saveRDS(
 political_preferences <-
   readRDS(file = "political_preferences.rds")
 
+```
+
+```{r}
 modelsummary(
   list(
     "Support Biden" = political_preferences
   ),
   statistic = "mad"
   )
-
 ```
+
+
+
 
 # Results
 
