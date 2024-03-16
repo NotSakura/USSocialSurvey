@@ -181,21 +181,56 @@ plot_hillary
 
 plot_trump <- ggplot(percentage_data_long %>% filter(Candidate == "DonaldTrump"), aes(x = birthyr, y = Percentage)) +
   geom_point() + 
-  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(title = "Percentage for Donald Trump", y = "Percentage (%)") +
   theme_minimal()
 plot_trump
 
-##porbably dont need this - cris
-plot_other <- ggplot(percentage_data_long %>% filter(Candidate == "Other"), aes(x = birthyr, y = Percentage)) +
-  geom_point() + 
-  geom_smooth(method = "lm", se = FALSE, color = "blue") +
-  labs(title = "Percentage for Other", y = "Percentage (%)") +
-  theme_minimal()
-plot_other
-
 
 ```
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+ces2020_votes <- ces2020 %>%
+  filter(voted_for != 'Did not vote') %>%
+  filter(voted_for %in% c("Biden", "Trump"))
+
+# Calculate percentages
+percentage_data_2 <- ces2020_votes %>%
+  group_by(birthyr) %>%
+  summarise(
+    `Joe Biden` = sum(voted_for == "Biden") / n() * 100,  # Enclosed in backticks
+    DonaldTrump = sum(voted_for == "Trump") / n() * 100
+  ) %>%
+  ungroup()
+
+# Reshape data to long format
+percentage_data_2_long <- pivot_longer(percentage_data_2, cols = -birthyr, names_to = "Candidate", values_to = "Percentage")
+
+# Plot for Joe Biden
+plot_biden <- ggplot(percentage_data_2_long %>% filter(Candidate == "Joe Biden"), aes(x = birthyr, y = Percentage)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Percentage for Joe Biden", y = "Percentage (%)", x = "Birth Year") +  # Adding x-axis label
+  theme_minimal()
+
+plot_biden
+
+# Plot for Donald Trump
+plot_trump_2 <- ggplot(percentage_data_2_long %>% filter(Candidate == "DonaldTrump"), aes(x = birthyr, y = Percentage)) +  # Match summarise naming
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Percentage for Donald Trump", y = "Percentage (%)", x = "Birth Year") +
+  theme_minimal()
+
+plot_trump_2
+
+```
+
+
+
 ## Model 2
 In this model, we conduct an examination of the relationship between voters' birth year and their gender for the 2016 and 2020 Presidential elections. This analysis is visualized by plotting a histogram that separate female voters on the left and male voters on the right, with voters' birth years measured along the x-axis, which ranges from 1925 to 2002. The y-axis quantifies the voter turnout for the year. For clarity ad symbolic representation, the colour blue was chosen to represent the Democratic candidates --Hillary Clinton for the 2016 election, and Joe Biden for the 2020 election, while red was chosen to the Represent the Republican candidate, Donald Trump, who sought the presidency in both terms. @fig-genderyr2016 present the distribution of votes in 2016, and @fig-genderyr2020 presents the data from the 2020 election. 
 
