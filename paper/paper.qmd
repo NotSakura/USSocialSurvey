@@ -146,27 +146,32 @@ There could have been many other similar data sets that could have been used for
 
 # Models
 
-## Model 1
-Initially, we filter the data to remove to exclude individuals who did not vote for Hillary Clinton or Donald Trump, due to the minimal votes for Gary Johnson, Jill Stein, Evan McMullin, and all other candidates which are insignificant to this paper. We first analyze the birth year of voters.
+## Aging and Its Impact on Voting
 
+In these following models we will of our research paper, we will look at the relationship between the demographic of age within the population and their voting patterns.The focus will primarily be on understanding how different age groups align themselves politically. By investigating the percentage of voters within each age bracket who support particular candidates, we aim to uncover nuanced insights into the demographic underpinnings of political support.Through the integration of descriptive statistics, analysis, and visual data representation we will offer a comprehensive overview on age base voting patterns. This will not only provide empirical evidence on the voting preferences of different ages but also help for a deeper understanding of the potential motivations behind their voting choices.
+
+### Voters in 2016 
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
+#| label: fig-hillary2016
+#| fig-cap: "Linear Regression comparing Percentage of Votes For Hillary Clinton and Year of Birth (2016)"
 
 # only choose values "Hillary Clinton" and "Donald Trump"
 ces2020_votes <- ces2020 %>%
-  filter(presvote16post != 'Did not vote') %>%
-  filter(presvote16post %in% c("Hillary Clinton", "Donald Trump"))
+  filter(presvote16post %in% c("Hillary Clinton", "Donald Trump", "Other", "Did not vote"))
 
 # Calculate percentages
 percentage_data <- ces2020_votes %>%
   group_by(birthyr) %>%
-  summarise(HillaryClinton = sum(presvote16post == "Hillary Clinton") / n() * 100,
-            DonaldTrump = sum(presvote16post == "Donald Trump") / n() * 100,
-            Other = sum(presvote16post == "Other") / n() * 100,
-            DidNotVote = sum(presvote16post == "Did not Vote") / n() * 100) %>%
+  summarise(
+    HillaryClinton = sum(presvote16post == "Hillary Clinton") / n() * 100,
+    DonaldTrump = sum(presvote16post == "Donald Trump") / n() * 100,
+    Other = sum(presvote16post == "Other") / n() * 100,
+    DidNotVote = sum(presvote16post == "Did not vote") / n() * 100
+  ) %>%
   ungroup()
 
 # Reshape data to long format
@@ -179,30 +184,82 @@ plot_hillary <- ggplot(percentage_data_long %>% filter(Candidate == "HillaryClin
   theme_minimal()
 plot_hillary
 
+
+
+
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-trump2016
+#| fig-cap: "Linear Regression comparing Percentage of Votes For Donald Trump and Year of Birth (2016)"
+
+
+#Trum Plot
 plot_trump <- ggplot(percentage_data_long %>% filter(Candidate == "DonaldTrump"), aes(x = birthyr, y = Percentage)) +
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(title = "Percentage for Donald Trump", y = "Percentage (%)") +
   theme_minimal()
 plot_trump
-
-
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
+#| label: fig-other2016
+#| fig-cap: "Linear Regression comparing Percentage of Votes For Other Caniddates and Year of Birth (2016)"
+
+plot_other <- ggplot(percentage_data_long %>% filter(Candidate == "Other"), aes(x = birthyr, y = Percentage)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE, color = "green") +
+  labs(title = "Percentage for Other", x = "Birth Year", y = "Percentage (%)") +
+  theme_minimal()
+plot_other
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-dnv2016
+#| fig-cap: "Linear Regression comparing Percentage of Non-Voters and Year of Birth (2016)"
+
+#plot did not vote
+plot_did_not_vote <- ggplot(percentage_data_long %>% filter(Candidate == "DidNotVote"), aes(x = birthyr, y = Percentage)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE, color = "orange") +
+  labs(title = "Percentage for Did Not Vote", x = "Birth Year", y = "Percentage (%)") +
+  theme_minimal()
+plot_did_not_vote
+```
+
+
+
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-biden2020
+#| fig-cap: "Linear Regression comparing Percentage of Votes For Joe Biden and Year of Birth (2020)"
 
 ces2020_votes <- ces2020 %>%
-  filter(voted_for != 'Did not vote') %>%
   filter(voted_for %in% c("Biden", "Trump"))
 
-# Calculate percentages
+# Calculate percentages for all categories
 percentage_data_2 <- ces2020_votes %>%
   group_by(birthyr) %>%
   summarise(
-    `Joe Biden` = sum(voted_for == "Biden") / n() * 100,  # Enclosed in backticks
-    DonaldTrump = sum(voted_for == "Trump") / n() * 100
+    Biden = sum(voted_for == "Biden") / n() * 100,
+    Trump = sum(voted_for == "Trump") / n() * 100
   ) %>%
   ungroup()
 
@@ -210,24 +267,36 @@ percentage_data_2 <- ces2020_votes %>%
 percentage_data_2_long <- pivot_longer(percentage_data_2, cols = -birthyr, names_to = "Candidate", values_to = "Percentage")
 
 # Plot for Joe Biden
-plot_biden <- ggplot(percentage_data_2_long %>% filter(Candidate == "Joe Biden"), aes(x = birthyr, y = Percentage)) +
+plot_biden <- ggplot(percentage_data_2_long %>% filter(Candidate == "Biden"), aes(x = birthyr, y = Percentage)) +
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
-  labs(title = "Percentage for Joe Biden", y = "Percentage (%)", x = "Birth Year") +  # Adding x-axis label
+  labs(title = "Percentage for Joe Biden", y = "Percentage (%)", x = "Birth Year") +
   theme_minimal()
 
 plot_biden
 
+
+
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-trump2020
+#| fig-cap: "Linear Regression comparing Percentage of Votes For Donald Trump Year of Birth (2020)"
+
 # Plot for Donald Trump
-plot_trump_2 <- ggplot(percentage_data_2_long %>% filter(Candidate == "DonaldTrump"), aes(x = birthyr, y = Percentage)) +  # Match summarise naming
+plot_trump_2 <- ggplot(percentage_data_2_long %>% filter(Candidate == "Trump"), aes(x = birthyr, y = Percentage)) +
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(title = "Percentage for Donald Trump", y = "Percentage (%)", x = "Birth Year") +
   theme_minimal()
 
 plot_trump_2
-
 ```
+
 
 
 
