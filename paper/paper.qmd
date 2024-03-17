@@ -215,7 +215,7 @@ plot_trump <- ggplot(percentage_data_long %>% filter(Candidate == "DonaldTrump")
 plot_trump
 ```
 
-While we look at the graph for Donald Trump in the 2016 election at first glance it does seem that the younger you are the more likey you were to have voted for trump in the 2016 election, but if we dig a bit deeper we can see that there seem to be several outliers on this graph, and the data points seem to somewhat be bouncing around a bit. This is confirmed when we look at our correlation coefficient $ R = 0.12$, so we can come to a conclsion that voting for Donald Trump in 2016 has a relatively weak positive correlation. 
+While we look at the graph for Donald Trump in the 2016 election at first glance it does seem that the younger you are the more likey you were to have voted for trump in the 2016 election, but if we dig a bit deeper we can see that there seem to be several outliers on this graph, and the data points seem to somewhat be bouncing around a bit. This is confirmed when we look at our correlation coefficient $R = 0.12$, so we can come to a conclsion that voting for Donald Trump in 2016 has a relatively weak positive correlation. 
 
 ```{r}
 #| echo: false
@@ -258,7 +258,7 @@ plot_did_not_vote <- ggplot(percentage_data_long %>% filter(Candidate == "DidNot
 plot_did_not_vote
 ```
 
-Here we will look at the members of the population that did not vote. @fig-dnv2016
+Here we will look at the members of the population that did not vote. @fig-dnv2016 shows us the steady increase of those citizens who do not vot
 
 
 
