@@ -258,9 +258,13 @@ plot_did_not_vote <- ggplot(percentage_data_long %>% filter(Candidate == "DidNot
 plot_did_not_vote
 ```
 
-Here we will look at the members of the population that did not vote. @fig-dnv2016 shows us the steady increase of those citizens who do not vot
+Here we will look at the members of the population that did not vote. @fig-dnv2016 shows us the steady increase of those citizens who did not vote in the 2016 presidential elections. We can see that they younger generation seems to have not voted for any candidate in the 2016 elections.  This can be due to a variety of reasons, such as disengagement with the political process, dissatisfaction with the candidates presented, or a feeling that their vote may not make a significant difference in the outcome. Other contributing factors could include obstacles to voting access, such as registration issues, polling place locations, or work and school schedules that conflict with voting hours.
 
+As we further dissect these trends, it's essential to understand the broader societal and cultural influences that might be contributing to this detachment.
 
+### Aging Voters (2020)
+
+The data provided for the 2020 elections was slightly different the the data from the 2016 elections, the main difference was that, there was no one who voted for another candidate, other than Joe Biden and Donald Trump from the Democratic and Republican parties respectively. There were also no "Did not vote" inputs like there were in the data from the 2016 election between Donald and Hillary.
 
 
 ```{r}
@@ -302,6 +306,10 @@ R_biden <- cor(biden_data$birthyr, biden_data$Percentage)
 
 ```
 
+In @fig-biden2020 we see a complete opposite graph compared to Hillary's from 2016 where her's seemed to be more popular among older voters where as Biden seems to be much more popular among younger voters. So much so that voters born after 1980 had at least 60% of their age groups voting for Biden and those born after 1990 had at least 70% of their age groups voting for Biden. This is a much less surprising Graph than Hillary's, as younger voters seem to be more likely to vote for more progressive parties and candidates.
+
+We can see that for the most part the graph seems to be increasing at nearly every point except for a dip starting around 1950 and does not start to pick up until 1960, which seems somewhat odd until we recall that those are the prime birth year of the baby boomer generation.
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -325,7 +333,7 @@ trump_2_data <- percentage_data_long %>% filter(Candidate == "Trump")
 R_trump_2 <- cor(trump_2_data$birthyr, trump_2_data$Percentage)
 ```
 
-
+Lastly, we will look at @fig-trump2020 which is essentially the invers of the previous graph as there were no other possible data points other than "Biden" and "Trump"
 
 
 ## Model 2
