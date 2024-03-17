@@ -7,7 +7,7 @@ This data uses the US 2020 Census results that is in the Harvard Database in ord
 ## LLM Usage
 chatGPT was used as error checking and searching up basic information. It was also used to make citations.Complete usage in `other/llm/usage.txt `
 Sakura: https://chat.openai.com/share/dfb4e3a4-ccc5-4a85-b35d-0a0056bfda8c 
-Yan: https://chat.openai.com/g/g-TgjKDuQwZ-r-wizard/c/02534232-fbfa-4f98-88dc-793afd54b7b8
+Yan: https://chat.openai.com/g/g-TgjKDuQwZ-r-wizard/c/48188d15-143f-4acf-9fc2-f6b3ed7e2e78
 
 
 ## File Structure
