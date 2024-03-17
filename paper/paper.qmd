@@ -333,7 +333,11 @@ trump_2_data <- percentage_data_long %>% filter(Candidate == "Trump")
 R_trump_2 <- cor(trump_2_data$birthyr, trump_2_data$Percentage)
 ```
 
-Lastly, we will look at @fig-trump2020 which is essentially the invers of the previous graph as there were no other possible data points other than "Biden" and "Trump"
+In @fig-biden2020 we see a complete opposite graph compared to Hillary's from 2016 where her's seemed to be more popular among older voters where as Biden seems to be much more popular among younger voters. So much so that voters born after 1980 had at least 60% of their age groups voting for Biden and those born after 1990 had at least 70% of their age groups voting for Biden. This is a much less surprising Graph than Hillary's, as younger voters seem to be more likely to vote for more progressive parties and candidates.
+
+We can see that for the most part the graph seems to be increasing at nearly every point except for a dip starting around 1950 and does not start to pick up until 1960, which seems somewhat odd until we recall that those are the prime birth year of the baby boomer generation.
+
+Lastly, we will look at @fig-trump2020 which is essentially the inverse of the previous graph as there were no other possible data points other than "Biden" and "Trump". While this graph may just be a reflection across the 50% line, it is still helpful so that wer may look at it from a different perspective. Just as in @fig-biden2020, @fig-trump2020 has a small peak after the year 1950. It is also important to note that even though there is a peak after the year 1950, all of the ages that had more than a 50% vote share for trump all also came before the year 1950.
 
 
 ## Model 2
