@@ -337,7 +337,7 @@ R_trump_2 <- cor(trump_2_data$birthyr, trump_2_data$Percentage)
 Lastly, we will look at @fig-trump2020 which is essentially the inverse of the previous graph as there were no other possible data points other than "Biden" and "Trump". While this graph may just be a reflection across the 50% line, it is still helpful so that wer may look at it from a different perspective. Just as in @fig-biden2020, @fig-trump2020 has a small peak after the year 1950. It is also important to note that even though there is a peak after the year 1950, all of the ages that had more than a 50% vote share for trump all also came before the year 1950.
 
 
-## Model 2
+## Comparing 2016 and 2020 votes based on birth year and gender
 In this model, we conduct an examination of the relationship between voters' birth year and their gender for the 2016 and 2020 Presidential elections. This analysis is visualized by plotting a histogram that separate female voters on the left and male voters on the right, with voters' birth years measured along the x-axis, which ranges from 1925 to 2002. The y-axis quantifies the voter turnout for the year. For clarity ad symbolic representation, the colour blue was chosen to represent the Democratic candidates --Hillary Clinton for the 2016 election, and Joe Biden for the 2020 election, while red was chosen to the Represent the Republican candidate, Donald Trump, who sought the presidency in both terms. @fig-genderyr2016 present the distribution of votes in 2016, and @fig-genderyr2020 presents the data from the 2020 election. 
 
 
@@ -428,7 +428,8 @@ votes_2020_m <- kable(votes_count_male,
       caption = "Ratio of 2016 Votes for Clinton to Trump by Birth Decade (Males)",
       digits = 2)
 
-kables(list(votes_2020_f, votes_2020_m))
+votes_2020_f
+votes_2020_m
 #If the ratio is greater than 1, it means that within the group, Biden has more votes than Trump
 #if the ratio is less than 1, Trump has more votes within the group
 ```
@@ -473,16 +474,15 @@ votes_2020_m <- kable(votes_count_male,
       caption = "Ratio of 2020 Votes for Biden to Trump by Birth Decade (Males)",
       digits = 2)
 
-kables(list(votes_2020_f, votes_2020_m))
-#If the ratio is greater than 1, it means that within the group, Biden has more votes than Trump
-#if the ratio is less than 1, Trump has more votes within the group
+votes_2020_f
+votes_2020_m
 ```
 
 We analyze the ratio of Democratic to Republic votes in 2016 in @tbl-ratio2016 and in 2020 in @tbl-ratio2020. We divide respondents by birth decade, and we list the total number of votes for the Democratic Party and thee Republican Party, then list the ratio of the two. The decades 1920 and 2000 were omitted since the number of respondents in those Birth Decades were very low. The value of the ratio in centered at 1, where if the values is greater than 1, then within that group, the Democratic Party has more votes than the Republican Party. Where the values are less than 1, the Republican Party has more votes. When the ratio is around 1, the number of votes is approximately equal. 
 
 We notice that in 2016, the ratio of votes decreases as birth decade increases for both women and men voters. The opposite happens in 2020, where the ratio of votes increases as birth decade increases. 
 
-## Model 3
+## Predicitng 2020 votes based off regression variables
 
 We have modeled the following logistic regression in the graphs:
 
@@ -591,6 +591,12 @@ The numbers on the first half of the table @tbl-modelresults3, right next to eac
 Our exploration into the voting patterns across different age demographics has surfaced intriguing insights into the electoral pulse of America during the 2016 and 2020 presidential elections. In 2016, the expectation was that Hillary Clinton would enjoy robust support from younger voters, yet the data depicted in @fig-hillary2016 revealed a contrary trend: a decrease in support among this demographic. The analysis of the voting trends across the 2016 and 2020 elections has brought to light notable differences in age related voting behaviors, especially concerning Donald Trump's candidacy. In the 2016 election, as depicted by @fig-trump2016, the expectation of a clear trend regarding age and support for Trump was not met. Instead, we observed a mildly chaotic scatter of data points, indicating no strong age-based preference. This was quantitatively supported by a weak positive correlation coefficient, R = 0.12, suggesting that Trump's voter support did not significantly increase or decrease with voters' ages. Alternately, in 2020, the political landscape has shifted with no small part to the global pandemic COVID-19, public discourse and other political movements including but not limited to the death of George Floyd. After many events in Trump's presidency, some within his control and some not, we have the information from @fig-trump2020, where we see more of as pattern among the data points where we can see Trump is more favored among older generations. This suggests an intensification of partisan divides along generational lines, with older voters becoming more entrenched in their support for Trump, while younger voters showed increasing support for the opposing Democratic candidate, Joe Biden. 
 
 ## Second discussion point
+
+## Comparing 2016 and 2020 votes votes based on birth year and gender 
+
+Our analysis displayed interesting results when when examining gender-based voting behaviors the from 2016 and 2020 US Presidential election votes in @fig-genderyr2016 and @fig-genderyr2020. We notice from the graphs and in @tbl-ratio2020 most votes were for the Republican Party in 2016, while most votes for the Democratic Party in 2020. Female voters have a higher ratio of Democratic voters to Republican voters in both years. In contrast, the distribution of male votes between the two parties was more evenly balanced. The most interesting and abstract result is that the votes are reversed in 2016 compared to 2020. There can be many explanations for this reverse, including that Americans were not satisfied with the Republican Presidency from 2016 to 2020. Further research should be done into the reason why there is a higher ratio of Democratic to Republican female voters compared to male voters.
+
+## Third discussion point
 
 ## Modeling immigration status, gender and 2016 voting results
 
