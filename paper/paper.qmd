@@ -146,11 +146,11 @@ There could have been many other similar data sets that could have been used for
 
 # Models/Results
 
-## Aging and Its Impact on Voting
+## The Generational Vote
 
 In these following models we will of our research paper, we will look at the relationship between the demographic of age within the population and their voting patterns.The focus will primarily be on understanding how different age groups align themselves politically. By investigating the percentage of voters within each age bracket who support particular candidates, we aim to uncover nuanced insights into the demographic underpinnings of political support.Through the integration of descriptive statistics, analysis, and visual data representation we will offer a comprehensive overview on age base voting patterns. This will not only provide empirical evidence on the voting preferences of different ages but also help for a deeper understanding of the potential motivations behind their voting choices.
 
-### Aging Voters (2016)
+### The Generational Vote (2016)
 
 In the following graphs we will be looking at the percentage of voters from each birth year that voted for Hillary Clinton, Donald Trump,and other candidates in the 2016 US Presidential election, we will also take a look at those who did not vote.
 
@@ -262,7 +262,7 @@ Here we will look at the members of the population that did not vote. @fig-dnv20
 
 As we further dissect these trends, it's essential to understand the broader societal and cultural influences that might be contributing to this detachment.
 
-### Aging Voters (2020)
+### The Generational Vote (2020)
 
 The data provided for the 2020 elections was slightly different the the data from the 2016 elections, the main difference was that, there was no one who voted for another candidate, other than Joe Biden and Donald Trump from the Democratic and Republican parties respectively. There were also no "Did not vote" inputs like there were in the data from the 2016 election between Donald and Hillary.
 
@@ -586,9 +586,9 @@ The numbers on the first half of the table @tbl-modelresults3, right next to eac
 
 # Discussion
 
-## First discussion point {#sec-first-point}
+## Dissecting Age Related Demographics
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this.
+Our exploration into the voting patterns across different age demographics has surfaced intriguing insights into the electoral pulse of America during the 2016 and 2020 presidential elections. In 2016, the expectation was that Hillary Clinton would enjoy robust support from younger voters, yet the data depicted in @fig-hillary2016 revealed a contrary trend: a decrease in support among this demographic. The analysis of the voting trends across the 2016 and 2020 elections has brought to light notable differences in age related voting behaviors, especially concerning Donald Trump's candidacy. In the 2016 election, as depicted by @fig-trump2016, the expectation of a clear trend regarding age and support for Trump was not met. Instead, we observed a mildly chaotic scatter of data points, indicating no strong age-based preference. This was quantitatively supported by a weak positive correlation coefficient, R = 0.12, suggesting that Trump's voter support did not significantly increase or decrease with voters' ages. Alternately, in 2020, the political landscape has shifted with no small part to the global pandemic COVID-19, public discourse and other political movements including but not limited to the death of George Floyd. After many events in Trump's presidency, some within his control and some not, we have the information from @fig-trump2020, where we see more of as pattern among the data points where we can see Trump is more favored among older generations. This suggests an intensification of partisan divides along generational lines, with older voters becoming more entrenched in their support for Trump, while younger voters showed increasing support for the opposing Democratic candidate, Joe Biden. 
 
 ## Second discussion point
 
@@ -600,6 +600,7 @@ If my paper were 10 pages, then should be be at least 2.5 pages. The discussion 
 
   It is nearly impossible to have data sets that are completely error-free and the same is true for this data set. The data set we used as analysis does not take into account the opinions of non-citizens and who they would have voted for. A lot of marginalized opinions are being left out when we clean the data and we only look for people that could vote. For example, refugees may have a different opinion on who got elected in the 2020 presidential candidate as they come from a different aspect of life and have different priorities that need to be addressed such as housing and or health care. 
   Another weakness in our data set is what occurs with a lot of data sets, which is missing values. This data set also contained them and those needed to be cleaned so that our analysis would not sway. Speaking of missing values, insignificant values were ignored in some of the models as well. For, example some of the presidential candidates got so few votes that including them would have actually hindered our ability to see the trends so we had to group them into others. This was beneficial for this paper but if we do indeed continue to analyze this paper for other purposes, this might cause problems. 
+  Additionally, in the 2016 data there are more candidates that the people voted fore, while not receiving many votes, there were absolutely other candidates mentioned in the 2020 data, as well as no people from the surveyed population chose not to vot unlike in the 2016 election, which could have provided a deeper insight on the differences between the two elections.
   
   In terms of the next steps for this paper, we look forward to predicting the 2024 election results by comparing the general priorities of the population. We could look at the population by immigration status, gender, age, or their previous 2020 voting results.  If we are able to correctly predict the results based on the model continuously, it would help us understand the priorities of American citizens; knowledge that would in turn help us help them. 
 
