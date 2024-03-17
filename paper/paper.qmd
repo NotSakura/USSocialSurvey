@@ -150,16 +150,18 @@ There could have been many other similar data sets that could have been used for
 
 In these following models we will of our research paper, we will look at the relationship between the demographic of age within the population and their voting patterns.The focus will primarily be on understanding how different age groups align themselves politically. By investigating the percentage of voters within each age bracket who support particular candidates, we aim to uncover nuanced insights into the demographic underpinnings of political support.Through the integration of descriptive statistics, analysis, and visual data representation we will offer a comprehensive overview on age base voting patterns. This will not only provide empirical evidence on the voting preferences of different ages but also help for a deeper understanding of the potential motivations behind their voting choices.
 
-### Voters in 2016 
+### Aging Voters (2016)
+
+In the following graphs we will be looking at the percentage of voters from each birth year that voted for Hillary Clinton, Donald Trump,and other candidates in the 2016 US Presidential election, we will also take a look at those who did not vote.
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
 #| label: fig-hillary2016
-#| fig-cap: "Linear Regression comparing Percentage of Votes For Hillary Clinton and Year of Birth (2016)"
+#| fig-cap: "Comparing Percentage of Votes For Hillary Clinton and Year of Birth (2016)"
 
-# only choose values "Hillary Clinton" and "Donald Trump"
+
 ces2020_votes <- ces2020 %>%
   filter(presvote16post %in% c("Hillary Clinton", "Donald Trump", "Other", "Did not vote"))
 
@@ -177,42 +179,54 @@ percentage_data <- ces2020_votes %>%
 # Reshape data to long format
 percentage_data_long <- pivot_longer(percentage_data, cols = -birthyr, names_to = "Candidate", values_to = "Percentage")
 
+#R value
+hillary_data <- percentage_data_long %>% filter(Candidate == "HillaryClinton")
+
+R_hillary <- cor(hillary_data$birthyr, hillary_data$Percentage)
+
 plot_hillary <- ggplot(percentage_data_long %>% filter(Candidate == "HillaryClinton"), aes(x = birthyr, y = Percentage)) +
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
-  labs(title = "Percentage for Hillary Clinton", y = "Percentage (%)") +
+  labs(title = "Percentage for Hillary Clinton", y = "Percentage (%)", x = "Birth Year") +
   theme_minimal()
 plot_hillary
 
-
-
-
-
 ```
+
+In @fig-hillary2016 we can see that the younger the voters, the smaller percentage of their birth year seem to have voted for Hillary Clinton in the 2016 presidential election. This was rather surprising for us, as we expected young voters more likely to vote for Hillary Clinton and the Democratic Party, as younger people are often more progressive than their older counterparts. @gig-hillary shows us that there seems to be a significant correlation between age, birth year, and what percent of that birth year voted for Hillary with a correlation coefficient of $R = -0.94$, which is a rather strong negative relationship between our two variables.
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
 #| label: fig-trump2016
-#| fig-cap: "Linear Regression comparing Percentage of Votes For Donald Trump and Year of Birth (2016)"
+#| fig-cap: "Comparing Percentage of Votes For Donald Trump and Year of Birth (2016)"
 
+trump_data <- percentage_data_long %>% filter(Candidate == "DonaldTrump")
+
+R_trump <- cor(trump_data$birthyr, trump_data$Percentage)
 
 #Trum Plot
 plot_trump <- ggplot(percentage_data_long %>% filter(Candidate == "DonaldTrump"), aes(x = birthyr, y = Percentage)) +
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE, color = "red") +
-  labs(title = "Percentage for Donald Trump", y = "Percentage (%)") +
+  labs(title = "Percentage for Donald Trump", y = "Percentage (%)", x = "Birth Year") +
   theme_minimal()
 plot_trump
 ```
+
+While we look at the graph for Donald Trump in the 2016 election at first glance it does seem that the younger you are the more likey you were to have voted for trump in the 2016 election, but if we dig a bit deeper we can see that there seem to be several outliers on this graph, and the data points seem to somewhat be bouncing around a bit. This is confirmed when we look at our correlation coefficient $ R = 0.12$, so we can come to a conclsion that voting for Donald Trump in 2016 has a relatively weak positive correlation. 
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
 #| label: fig-other2016
-#| fig-cap: "Linear Regression comparing Percentage of Votes For Other Caniddates and Year of Birth (2016)"
+#| fig-cap: "Comparing Percentage of Votes For Other Caniddates and Year of Birth (2016)"
+
+other_data <- percentage_data_long %>% filter(Candidate == "Other")
+
+R_other <- cor(other_data$birthyr, other_data$Percentage)
 
 plot_other <- ggplot(percentage_data_long %>% filter(Candidate == "Other"), aes(x = birthyr, y = Percentage)) +
   geom_point() + 
@@ -222,12 +236,18 @@ plot_other <- ggplot(percentage_data_long %>% filter(Candidate == "Other"), aes(
 plot_other
 ```
 
+@fig-other2016 does not seem to give us to much information about the age of those who voted for other candidates in the 2016 presidential elections, such as Gary Johnson and Jill Stein. While all these candidates received a combined less than 5% of the total vote, and less than 5% of the share of the vote from each birth year, we believe that transparency is incredibly important when doing data heavy research and while this may not seem as important as the graphs for Hillary Clinton and Donald Trump, this graph absolutely has a place in this paper.
+
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
 #| label: fig-dnv2016
-#| fig-cap: "Linear Regression comparing Percentage of Non-Voters and Year of Birth (2016)"
+#| fig-cap: "Comparing Percentage of Non-Voters and Year of Birth (2016)"
+
+dnv_data <- percentage_data_long %>% filter(Candidate == "Did not vote")
+
+R_dnv <- cor(dnv_data$birthyr, dnv_data$Percentage)
 
 #plot did not vote
 plot_did_not_vote <- ggplot(percentage_data_long %>% filter(Candidate == "DidNotVote"), aes(x = birthyr, y = Percentage)) +
@@ -238,8 +258,7 @@ plot_did_not_vote <- ggplot(percentage_data_long %>% filter(Candidate == "DidNot
 plot_did_not_vote
 ```
 
-
-
+Here we will look at the members of the population that did not vote. @fig-dnv2016
 
 
 
@@ -249,7 +268,7 @@ plot_did_not_vote
 #| warning: false
 #| message: false
 #| label: fig-biden2020
-#| fig-cap: "Linear Regression comparing Percentage of Votes For Joe Biden and Year of Birth (2020)"
+#| fig-cap: "Comparing Percentage of Votes For Joe Biden and Year of Birth (2020)"
 
 ces2020_votes <- ces2020 %>%
   filter(voted_for %in% c("Biden", "Trump"))
@@ -275,7 +294,10 @@ plot_biden <- ggplot(percentage_data_2_long %>% filter(Candidate == "Biden"), ae
 
 plot_biden
 
+#Rvalue Biden
+biden_data <- percentage_data_long %>% filter(Candidate == "Biden")
 
+R_biden <- cor(biden_data$birthyr, biden_data$Percentage)
 
 
 ```
@@ -285,7 +307,7 @@ plot_biden
 #| warning: false
 #| message: false
 #| label: fig-trump2020
-#| fig-cap: "Linear Regression comparing Percentage of Votes For Donald Trump Year of Birth (2020)"
+#| fig-cap: "Comparing Percentage of Votes For Donald Trump Year of Birth (2020)"
 
 # Plot for Donald Trump
 plot_trump_2 <- ggplot(percentage_data_2_long %>% filter(Candidate == "Trump"), aes(x = birthyr, y = Percentage)) +
@@ -295,6 +317,12 @@ plot_trump_2 <- ggplot(percentage_data_2_long %>% filter(Candidate == "Trump"), 
   theme_minimal()
 
 plot_trump_2
+
+#rvalue Trump 2020
+
+trump_2_data <- percentage_data_long %>% filter(Candidate == "Trump")
+
+R_trump_2 <- cor(trump_2_data$birthyr, trump_2_data$Percentage)
 ```
 
 
