@@ -193,7 +193,7 @@ plot_hillary
 
 ```
 
-In @fig-hillary2016 we can see that the younger the voters, the smaller percentage of their birth year seem to have voted for Hillary Clinton in the 2016 presidential election. This was rather surprising for us, as we expected young voters more likely to vote for Hillary Clinton and the Democratic Party, as younger people are often more progressive than their older counterparts. @gig-hillary shows us that there seems to be a significant correlation between age, birth year, and what percent of that birth year voted for Hillary with a correlation coefficient of $R = -0.94$, which is a rather strong negative relationship between our two variables.
+In @fig-hillary2016 we can see that the younger the voters, the smaller percentage of their birth year seem to have voted for Hillary Clinton in the 2016 presidential election. This was rather surprising for us, as we expected young voters more likely to vote for Hillary Clinton and the Democratic Party, as younger people are often more progressive than their older counterparts. @fig-hillary shows us that there seems to be a significant correlation between age, birth year, and what percent of that birth year voted for Hillary with a correlation coefficient of $R = -0.94$, which is a rather strong negative relationship between our two variables.
 
 ```{r}
 #| echo: false
