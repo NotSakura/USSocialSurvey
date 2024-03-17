@@ -125,7 +125,7 @@ ces2020 <-
 
 The United States is one of the leading countries in export, imports and almost everything economic and socially related. The US contributes to the worlds economy by 20% despite the fact that they contain 5% of the populations[@USTradeRep]. This makes the US very relevant to not only national news but also international news. This is why the US presidential elections are broadcaster to worldwide ever election term. The results of the election not only affect American citizens but also external affairs related to the country. 
 
-The United States of America is a democratic government which means that they hold election every 4 years[@usc_presidential_election]. The 2 parties that historically run against each other with the most votes are the Republican party and the Democratic Party. The republicans are often associated with conservative beliefs and values such as views opposing abortion and privatization to save their economy. The Democrats, on the other hand, are often associated with liberal views such as social welfare programs and higher taxes to support the government aids provided to citizens[@britannica_dem_vs_rep]. There are many other parties such as Libertarian Party, Green Party, Constitution Party and other independent candidates but because majority of the votes goes to the 2 parties the others are often over looked. The legal voting age is 18 in the states and you must be a registered voter in order to take part of the election which means non-citizens are not taken into account. Students are not as well. Also there seems to be a 66% voter turnout which means the remaining 34% decided not to vote [@DeSilver_2022]. The 2024 elections is also coming up this year meaning that analyzing this results may help us predict what the outcome of the election might be. 
+The United States of America is a democratic government which means that they hold election every 4 years[@usc_presidential_election]. The 2 parties that historically run against each other with the most votes are the Republican party and the Democratic Party. The republicans are often associated with conservative beliefs and values such as views opposing abortion and privatization to save their economy. The Democrats, on the other hand, are often associated with liberal views such as social welfare programs and higher taxes to support the government aids provided to citizens[@britannica_dem_vs_rep]. There are many other parties such as Libertarian Party, Green Party, Constitution Party and other independent candidates but because majority of the votes goes to the 2 parties the others are often over looked. The legal voting age is 18 in the states and you must be a registered voter in order to take part of the election which means non-citizens are not taken into account. Students are not as well. Also there seems to be a 66% voter turnout which means the remaining 34% decided not to vote [@DeSilver_2022]. The 2024 elections is also coming up this year meaning that analyzing this results may help us predict what the outcome of the election might be. As for the results of the election in 2020, Donald Trump won the precidential title. 
 
 This research examines the voting patterns in the 2016 and 2020 US Presidential elections. We will be looking at data collected by the Cooperative Election Study and accessed through the Harvard University Database [@dataverse]. The analysis is based on a representative sample of 61,000 American adults, which provides detailed information about each individuals gender, birth year, race, registered state, employment, education loans, immigration status, dual-citizenship, religion, and 2016 and 2020 Presidential vote. The goal of this study is to use relevant variables from the electoral data to investigate patterns, trend and predictions regrading American electoral preferences from 2016 and 2020.
 
@@ -489,10 +489,11 @@ We have modeled the following logistic regression in the graphs:
 $$
 \begin{aligned} 
 y_i|\pi_i  &\sim \mbox{Bern}(\pi_i) \\
-\mbox{logit}(\pi_i) &= \beta_0 + \beta_1 \times \mbox{gender}_i + \beta_2\times \mbox{immigration status}_i\\
+\mbox{logit}(\pi_i) &= \beta_0 + \beta_1 \times \mbox{gender}_i + \beta_2\times \mbox{immigration status}_i + \beta_3\times \mbox{previous 2016 vote}_i\\
 \beta_0 &\sim \mbox{Normal}(0, 2.5) \\
 \beta_1 &\sim \mbox{Normal}(0, 2.5) \\
-\beta_2 &\sim \mbox{Normal}(0, 2.5)
+\beta_2 &\sim \mbox{Normal}(0, 2.5) \\
+\beta_3 &\sim \mbox{Normal}(0, 2.5)
 \end{aligned}
 $$
 
@@ -547,7 +548,7 @@ ces2020_reduced <-
 
 political_preferences <-
   stan_glm(
-    voted_for ~ gender + immstat,
+    voted_for ~ gender + immstat + presvote16post ,
     data = ces2020_reduced,
     family = binomial(link = "logit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
@@ -569,7 +570,7 @@ political_preferences <-
 ```{r}
 #| echo: false
 #| eval: true
-#| label: tbl-modelresults
+#| label: tbl-modelresults3
 #| tbl-cap: "Explanatory models of presidential election in 2020 based on gender and immigration status"
 #| warning: false
 modelsummary(
@@ -581,7 +582,7 @@ modelsummary(
 ```
 
 
-
+The numbers on the first half of the table @tbl-modelresults3, right next to each variable name, shows us the coefficient related to each of the predictor variables. It tells us whether the respondent is expected to vote for Biden or not based on their immigration status, gender and who they voted for in the 2016 elections. The bracketed values are the errors associated with the coefficients so the smaller the number the less likely the model inaccurately came up with the coefficients. Notice that one of the variables is named intercept which essentially represents gender Female. We see that in "parent and I born in US but grandparent(s) immigrant", "gender male" and "gender female", the coefficients are negative meaning that they are not inclined to vote for Biden in the 2020 election. All other values are positive and we see for people who voted for Trump in the 2016 election, they have a higher coefficient with a relatively small inaccuracy rate. 
 
 # Discussion
 
@@ -591,14 +592,16 @@ If my paper were 10 pages, then should be be at least 2.5 pages. The discussion 
 
 ## Second discussion point
 
-## Third discussion point
+## Modeling immigration status, gender and 2016 voting results
+
+   @tbl-modelresults3 was a very interesting plot to examine as they let us see the correlation between the election held in 2020 and other factors such as gender, immigration status, and the election results in 2016. Starting off we look at the negative values. We see that both males and females are less likely to vote for Biden as their coefficient is negative. The female has more of a negative value meaning that their priorities do not align with the view of the democratic party. This makes sense as we look at the news in the past years when we see the Biden government push for anti-abortion laws, the very law that a lot of women are opposed to as they argue they deserve to make that choice. As for the negative value for the males, there does not seem to be a direct answer to that. From here we see that it makes more sense to look at the large coefficients as the smaller values may be a result of many different things. A person is just not male but they may also be from a different ethnicity or religion whose priorities are different from the Biden government. America is a very diverse country so it makes sense that many people have different reasons to support and not support the republicans. The next largest value we notice is for people who were born in the US but have immigrant parents and people who are immigrants but not citizens. This makes sense as the Biden government actually reversed some of the immigration plans implemented by the previous government that harmed immigrants. Some of these laws were the travel ban put on Muslim-majority countries that resulted in many immigrants being unable to come to America to find a better future. It makes sense that children of people who immigrated and people who are immigrants themselves would prioritize such issues. Lastly, we look at the another coefficient found in the table which is the people who voted for Trump in the 2016 election. We see that it is very likely that people who voted for Trump in the last election, voted for Biden in this one. This may be due to the fact that there were many protests of the Trump administration and how they ran the country during their term. Some of the backlash that happened while Trump was president was the travel ban on Muslim-majority countries, reduced government regulation across various industries, and tax cuts from private corporations. These decisions may have led many people to not re-elect Trump for another 4 years as their president. The same is seen for people who voted for Evan McMullin (independent candidate) and other smaller parties. The reasons are hard to infer but it may be due to the fact that their candidate did not run again or their priorities and views changed from the party/person they voted for.
 
 ## Weaknesses and next steps
 
-  It is near impossible to have data sets that are completely error-free and the same is true for this data-set. The data-set we used as analysis does not take into account the opinions of non-citizens and who they would have voted for. A lot of marginalized opinions are being left out when we clean the data and we only look for people that could vote. For example refugees may have a different opinion on who got elected in the 2020 presidential candidate as they come from a different aspect of life and have different priorities that need to be addressed such as housing and or health care. 
-  Another weakness in our data-set is what occurs with a lot of data-sets, which is missing values. This data set also contained them and those needed to be cleaned so that our analysis would not sway. Speaking of missing values, insignificant values were ignored in some of the models as well. For, example some of the presidential candidates got so little votes that including them would have actually hindered our ability to see the trends so we had to group them in others. This was beneficial for this paper but  if we do indeed continue to analyse this paper for other purposes, this might cause problems. 
+  It is nearly impossible to have data sets that are completely error-free and the same is true for this data set. The data set we used as analysis does not take into account the opinions of non-citizens and who they would have voted for. A lot of marginalized opinions are being left out when we clean the data and we only look for people that could vote. For example, refugees may have a different opinion on who got elected in the 2020 presidential candidate as they come from a different aspect of life and have different priorities that need to be addressed such as housing and or health care. 
+  Another weakness in our data set is what occurs with a lot of data sets, which is missing values. This data set also contained them and those needed to be cleaned so that our analysis would not sway. Speaking of missing values, insignificant values were ignored in some of the models as well. For, example some of the presidential candidates got so few votes that including them would have actually hindered our ability to see the trends so we had to group them into others. This was beneficial for this paper but if we do indeed continue to analyze this paper for other purposes, this might cause problems. 
   
-  In terms of next steps for this paper, we look forward to predict the 2024 election results by comparing the what the general priorities of the population is. We could look at population by immigration status, gender, age, or their previous 2020 voting results.  If we are able to correctly predict the results based on the model continuously, it would help understand the priorities of american citizens; knowledge that would in turn help us help them. 
+  In terms of the next steps for this paper, we look forward to predicting the 2024 election results by comparing the general priorities of the population. We could look at the population by immigration status, gender, age, or their previous 2020 voting results.  If we are able to correctly predict the results based on the model continuously, it would help us understand the priorities of American citizens; knowledge that would in turn help us help them. 
 
 \newpage
 
@@ -608,13 +611,25 @@ If my paper were 10 pages, then should be be at least 2.5 pages. The discussion 
 
 # Additional data details
 
+```{r}
+#| echo: false
+#| eval: true
+#| label: fig-modelCred
+#| fig-cap: "Credible intervals for predictors of support for Biden"
+#| warning: false
+
+modelplot(political_preferences, conf_level = 0.9) +
+  labs(x = "90 per cent credibility interval")
+```
+
+
 # Model details {#sec-model-details}
 
 ## Posterior predictive check
 
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check.
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows...
+In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior.
 
 ```{r}
 #| eval: true
