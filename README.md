@@ -1,17 +1,18 @@
 # Starter folder
 
-## Overview
+## Abstract
 
-This repo provides students with a foundation for their own projects associated with *Telling Stories with Data*. You do not need every aspect for every paper and you should delete aspects that you do not need.
+This data uses the US 2020 Census results that is in the Harvard Database in order to analyse if there is a correltaion between the election numbers in 2020 and other factors. The factors include immigration status, gender, birth year, and results from the 2016 election. It was found that there does exist a correlation between the outcomes of the 2020 election and the above variables. These are important results as the US is a country that si considered a hub, due to all the external relations they have with multiple countries. These results will also help predict who may win the 2024 elections. 
 
-To use this folder, click the green "Code" button", then "Download ZIP". Move the downloaded folder to where you want to work on your own computer, and then modify it to suit.
-
+## LLM Usage
+chatGPT was used as error checking and searching up basic information. It was also used to make citations.Complete usage in `other/llm/usage.txt `
+Sakura: https://chat.openai.com/share/dfb4e3a4-ccc5-4a85-b35d-0a0056bfda8c 
 
 ## File Structure
 
 The repo is structured as:
 
--   `data/raw_data` contains the raw data as obtained from X.
+-   `data/raw_data` contains the raw data as obtained from Harvard database.
 -   `data/analysis_data` contains the cleaned dataset that was constructed.
 -   `model` contains fitted models. 
 -   `other` contains relevant literature, details about LLM chat interactions, and sketches.
@@ -19,6 +20,4 @@ The repo is structured as:
 -   `scripts` contains the R scripts used to simulate, download and clean data.
 
 
-## Statement on LLM usage
 
-Aspects of the code were written with the help of the auto-complete tool, Codriver. The abstract and introduction were written with the help of ChatHorse and the entire chat history is available in inputs/llms/usage.txt.
