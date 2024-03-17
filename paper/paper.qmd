@@ -530,6 +530,11 @@ political_preferences <-
 ```
 
 ```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-modelresults
+#| tbl-cap: "Explanatory models of presidential election in 2020 based on gender and immigration status"
+#| warning: false
 modelsummary(
   list(
     "Support Biden" = political_preferences
@@ -537,6 +542,7 @@ modelsummary(
   statistic = "mad"
   )
 ```
+
 
 
 
@@ -583,6 +589,16 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
+pp_check(political_preferences) +
+  theme_classic() +
+  theme(legend.position = "bottom")
+
+posterior_vs_prior(political_preferences) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1") +
+  theme(legend.position = "bottom") +
+  coord_flip()
+
 ```
 
 ## Diagnostics
@@ -597,6 +613,10 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
+
+plot(political_preferences, "trace")
+
+plot(political_preferences, "rhat")
 
 ```
 
