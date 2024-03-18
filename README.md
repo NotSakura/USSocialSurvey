@@ -8,7 +8,7 @@ This data uses the US 2020 Census results that is in the Harvard Database in ord
 chatGPT was used as error checking and searching up basic information. It was also used to make citations.Complete usage in `other/llm/usage.txt `
 Sakura: https://chat.openai.com/share/dfb4e3a4-ccc5-4a85-b35d-0a0056bfda8c 
 Yan: https://chat.openai.com/g/g-TgjKDuQwZ-r-wizard/c/48188d15-143f-4acf-9fc2-f6b3ed7e2e78
-CristinaL https://chat.openai.com/share/7b7127a1-ad8c-4dc8-8041-b3f70ea66e90
+Cristina: https://chat.openai.com/share/7b7127a1-ad8c-4dc8-8041-b3f70ea66e90
 
 
 
